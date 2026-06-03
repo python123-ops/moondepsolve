@@ -5,3 +5,4 @@ target
 .mooncakes/
 .moonagent/
 docs/competition/rendered/
+.github/workflows/copilot-setup-steps.yml
