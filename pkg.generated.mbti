@@ -12,6 +12,10 @@ pub fn format_version(Version) -> String
 
 pub fn matches(Version, VersionReq) -> Bool
 
+pub fn parse_lock(String) -> Result[Resolution, DepError]
+
+pub fn parse_registry(String) -> Result[Registry, DepError]
+
 pub fn parse_req(String) -> Result[VersionReq, DepError]
 
 pub fn parse_version(String) -> Result[Version, DepError]

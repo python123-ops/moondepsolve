@@ -211,6 +211,36 @@ pub fn format_lock(resolution : Resolution) -> String {
 }
 
 ///|
+pub fn parse_lock(input : String) -> Result[Resolution, DepError] {
+  let packages : Array[PackageVersion] = []
+  for line_view in input.split("\n") {
+    let line = line_view.to_owned().trim().to_owned()
+    if line.length() > 0 && !line.has_prefix("#") {
+      match parse_lock_line(line) {
+        Ok(item) => packages.push(item)
+        Err(err) => return Err(err)
+      }
+    }
+  }
+  Ok({ packages, })
+}
+
+///|
+pub fn parse_registry(input : String) -> Result[Registry, DepError] {
+  let packages : Array[PackageVersion] = []
+  for line_view in input.split("\n") {
+    let line = line_view.to_owned().trim().to_owned()
+    if line.length() > 0 && !line.has_prefix("#") {
+      match parse_registry_line(line) {
+        Ok(item) => packages.push(item)
+        Err(err) => return Err(err)
+      }
+    }
+  }
+  Ok({ packages, })
+}
+
+///|
 pub fn format_error(err : DepError) -> String {
   match err {
     InvalidVersion(input, reason) => "invalid version '\{input}': \{reason}"
@@ -220,6 +250,78 @@ pub fn format_error(err : DepError) -> String {
     VersionConflict(name, selected, req, path) =>
       "conflict for \{name}: selected \{selected} does not satisfy \{req} required by \{path}"
   }
+}
+
+///|
+fn parse_lock_line(line : String) -> Result[PackageVersion, DepError] {
+  let words = split_words(line)
+  if words.length() != 2 {
+    return Err(InvalidReq(line, "lock line must be: name version"))
+  }
+  match parse_version(words[1]) {
+    Ok(version) => Ok({ name: words[0], version, dependencies: [] })
+    Err(err) => Err(err)
+  }
+}
+
+///|
+fn parse_registry_line(line : String) -> Result[PackageVersion, DepError] {
+  let (package_part, dependency_part) = match line.split_once("|") {
+    Some((left, right)) => (left.to_owned(), right.to_owned())
+    None => (line, "")
+  }
+  let words = split_words(package_part)
+  if words.length() != 2 {
+    return Err(InvalidReq(line, "registry line must be: name version"))
+  }
+  let version = match parse_version(words[1]) {
+    Ok(version) => version
+    Err(err) => return Err(err)
+  }
+  let dependencies : Array[Dependency] = []
+  let dep_text = dependency_part.trim().to_owned()
+  if dep_text.length() > 0 {
+    for dep_view in dep_text.split(",") {
+      let dep_input = dep_view.to_owned().trim().to_owned()
+      if dep_input.length() > 0 {
+        match parse_dependency_spec(dep_input) {
+          Ok(dependency) => dependencies.push(dependency)
+          Err(err) => return Err(err)
+        }
+      }
+    }
+  }
+  Ok({ name: words[0], version, dependencies })
+}
+
+///|
+fn parse_dependency_spec(input : String) -> Result[Dependency, DepError] {
+  match input.split_once(":") {
+    Some((name_view, req_view)) => {
+      let name = name_view.to_owned().trim().to_owned()
+      let req_text = req_view.to_owned().trim().to_owned()
+      if name.length() == 0 {
+        return Err(InvalidReq(input, "dependency name is empty"))
+      }
+      match parse_req(req_text) {
+        Ok(req) => Ok({ name, req })
+        Err(err) => Err(err)
+      }
+    }
+    None => Err(InvalidReq(input, "dependency must be: name: requirement"))
+  }
+}
+
+///|
+fn split_words(input : String) -> Array[String] {
+  let words : Array[String] = []
+  for word_view in input.split(" ") {
+    let word = word_view.to_owned().trim().to_owned()
+    if word.length() > 0 {
+      words.push(word)
+    }
+  }
+  words
 }
 
 ///|
