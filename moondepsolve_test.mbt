@@ -163,3 +163,37 @@ test "format lock output deterministically" {
     "# MoonDepSolve lock\nhttp 0.3.4\ncore 1.2.0\n",
   )
 }
+
+///|
+test "parse text registry and resolve dependencies" {
+  let input = "core 1.2.0\nhttp 0.3.4 | core: ^1.0.0\nappkit 1.0.0 | http: ~0.3.0\n"
+  let repo = match @moondepsolve.parse_registry(input) {
+    Ok(repo) => repo
+    Err(err) =>
+      abort("unexpected registry error: " + @moondepsolve.format_error(err))
+  }
+  let result = match @moondepsolve.resolve([dep("appkit", "1.0.0")], repo) {
+    Ok(result) => result
+    Err(err) =>
+      abort("unexpected resolve error: " + @moondepsolve.format_error(err))
+  }
+  assert_eq(
+    @moondepsolve.format_lock(result),
+    "# MoonDepSolve lock\nappkit 1.0.0\nhttp 0.3.4\ncore 1.2.0\n",
+  )
+}
+
+///|
+test "parse lock output back into a resolution" {
+  let lock = "# MoonDepSolve lock\nhttp 0.3.4\ncore 1.2.0\n"
+  let resolution = match @moondepsolve.parse_lock(lock) {
+    Ok(resolution) => resolution
+    Err(err) =>
+      abort("unexpected lock error: " + @moondepsolve.format_error(err))
+  }
+  assert_eq(resolution.packages.length(), 2)
+  assert_eq(resolution.packages[0].name, "http")
+  assert_eq(version_text(resolution.packages[0].version), "0.3.4")
+  assert_eq(resolution.packages[1].name, "core")
+  assert_eq(version_text(resolution.packages[1].version), "1.2.0")
+}

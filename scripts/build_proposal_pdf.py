@@ -1,4 +1,5 @@
 from pathlib import Path
+import hashlib
 
 from docx import Document
 from docx.shared import Pt
@@ -8,6 +9,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import cm
 from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase import pdfdoc
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
@@ -23,10 +25,17 @@ GITLINK_URL = "https://gitlink.org.cn/python123/moondepsolve"
 GITHUB_URL = "https://github.com/python123-ops/moondepsolve"
 CORE_AUTHOR = "python123"
 
+
+def _compatible_md5(data=b"", **_kwargs):
+    return hashlib.md5(data)
+
+
+pdfdoc.md5 = _compatible_md5
+
 SECTIONS = [
     (
         "一、项目简介",
-        "MoonDepSolve 面向 MoonBit 包生态中的版本约束和依赖选择问题，提供语义版本解析、版本范围匹配、依赖图求解、冲突诊断和依赖锁定结果输出。项目使用 MoonBit 编写，不依赖外部服务，适合在包管理、构建规划、依赖检查和自动化发布流程中作为基础组件使用。",
+        "MoonDepSolve 面向 MoonBit 包生态中的版本约束和依赖选择问题，提供语义版本解析、版本范围匹配、依赖图求解、冲突诊断、依赖锁定结果输出、轻量文本包索引读入和 lock 读回能力。项目使用 MoonBit 编写，不依赖外部服务，适合在包管理、构建规划、依赖检查和自动化发布流程中作为基础组件使用。",
     ),
     (
         "二、项目方向与适用场景",
@@ -34,7 +43,7 @@ SECTIONS = [
     ),
     (
         "三、计划实现的核心功能",
-        "项目目前实现语义版本解析、prerelease 排序、exact/caret/tilde/comparator/wildcard 五类约束解析、版本匹配、传递依赖求解、最高兼容版本选择、冲突路径诊断和依赖锁定结果输出。命令行示例会展示一个内置包索引的求解过程，测试覆盖成功解析和失败诊断场景。",
+        "项目目前实现语义版本解析、prerelease 排序、exact/caret/tilde/comparator/wildcard 五类约束解析、版本匹配、传递依赖求解、最高兼容版本选择、冲突路径诊断、依赖锁定结果输出、文本包索引读入和 lock 读回。命令行示例会展示一个内置包索引的求解过程，测试覆盖成功解析和失败诊断场景。",
     ),
     (
         "四、实现说明",
@@ -46,11 +55,15 @@ SECTIONS = [
     ),
     (
         "六、预期成果",
-        "项目预期交付一个可运行的 MoonBit 依赖求解基础库，一组覆盖版本解析、约束匹配、传递依赖和冲突诊断的测试，一个可通过 moon run cmd/main 执行的 CLI 示例，以及 README、设计文档、验收清单和本申报书。仓库将同步到 GitLink 与 GitHub，便于评审克隆和复现。",
+        "项目预期交付一个可运行的 MoonBit 依赖求解基础库，一组覆盖版本解析、约束匹配、传递依赖、冲突诊断、文本索引读入和 lock 读回的测试，一个可通过 moon run cmd/main 执行的 CLI 示例，以及 README、设计文档、验收清单、发布清单和本申报书。仓库将同步到 GitLink 与 GitHub，便于评审克隆和复现。",
     ),
     (
         "七、后续计划",
-        "后续计划接入真实包索引读取、结构化锁文件读写、最小变更升级建议、依赖图输出、冲突图解释、构建计划生成和 MoonBit 包发布流程。相比单一文本处理工具，依赖求解方向更贴近包生态和构建工具链中的基础需求。",
+        "后续计划接入更完整的真实包索引读取、结构化锁文件读写、最小变更升级建议、依赖图输出、冲突图解释、构建计划生成和 MoonBit 包发布流程。相比单一文本处理工具，依赖求解方向更贴近包生态和构建工具链中的基础需求。",
+    ),
+    (
+        "八、开源维护与合规",
+        "项目采用 Apache-2.0 许可证，GitLink 仓库作为比赛验收主仓库，GitHub 仓库作为同步镜像。后续维护会保持清晰提交记录、README、CI、测试、接口摘要和 Mooncakes 发布说明。若参考其他生态中的 semver 或 resolver 项目，会在文档中说明参考来源、链接、许可证和实际参考范围，不提交未经授权的私有代码、闭源代码、商业代码或来源不明的生成内容。",
     ),
 ]
 
