@@ -11,6 +11,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure contributor identity
+        run: |
+          git config user.name python123
+          git config user.email python123@users.noreply.gitlink.org.cn
+
+      - name: Verify contributor identity
+        run: python scripts/check_contributor_identity.py
 
       - name: Install MoonBit
         run: |
@@ -21,13 +31,15 @@ jobs:
         run: moon version
 
       - name: Update interfaces
-        run: moon info
+        run: |
+          moon info
+          git diff --exit-code -- '*.mbti'
 
       - name: Check formatting
         run: moon fmt --check
 
       - name: Run tests
-        run: moon test
+        run: moon test --enable-coverage
 
       - name: Run CLI demo
         run: moon run cmd/main
