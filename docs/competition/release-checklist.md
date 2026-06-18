@@ -1,42 +1,34 @@
-# MoonDepSolve 发布前检查清单
+# MoonDepSolve v0.2 发布前检查清单
 
-用于每次准备 GitLink/GitHub 同步、Mooncakes 发布或比赛验收前的最后检查。
+## 代码、接口与身份
 
-## 代码与接口
+- [ ] `git config user.name` 为 `python123`。
+- [ ] `git config user.email` 为 `python123@users.noreply.gitlink.org.cn`。
+- [ ] `python scripts/check_contributor_identity.py`。
+- [ ] `moon info`，人工检查 `pkg.generated.mbti`。
+- [ ] `moon fmt --check`。
+- [ ] `moon check --warn-list +73`。
+- [ ] `moon test --enable-coverage` 与 `moon coverage analyze`。
+- [ ] `moon run cmd/main`。
 
-- [ ] `moon check`
-- [ ] `moon test`
-- [ ] `moon run cmd/main`
-- [ ] `moon info`
-- [ ] `moon fmt`
-- [ ] 检查 `pkg.generated.mbti` 和 `cmd/main/pkg.generated.mbti`，确认公开 API 变化符合本次发布目标。
+## 文档与合规
 
-## 文档与材料
+- [ ] README API、示例、Roadmap、版本和 Mooncakes 状态一致。
+- [ ] CHANGELOG、CONTRIBUTING、SECURITY、Issue/PR 模板齐全。
+- [ ] Apache-2.0、AI 辅助声明和第三方来源记录完整。
+- [ ] 一页 PDF 页数断言通过，DOCX 渲染无裁切、重叠或缺字。
 
-- [ ] README 的 API 表、示例、Roadmap 和许可证说明与当前代码一致。
-- [ ] `docs/competition/acceptance-checklist.md` 已更新。
-- [ ] `docs/competition/proposal.md` 已更新。
-- [ ] 重新生成 `docs/competition/MoonDepSolve项目申报书.pdf`。
-- [ ] 重新生成 `docs/competition/MoonDepSolve项目申报书.docx`。
-- [ ] 如已发布 Mooncakes 包，README 中补充包链接和安装方式。
+## Mooncakes
 
-## 开源合规
+- [ ] `moon login` 完成。
+- [ ] `moon publish --dry-run` 通过。
+- [ ] 本轮不执行实际 `moon publish`。
+- [ ] 实际发布后记录包链接、版本和发布时间。
 
-- [ ] `LICENSE` 保持 Apache-2.0。
-- [ ] 新增代码没有复制未经授权的私有、闭源、商业或来源不明内容。
-- [ ] 如参考第三方项目，README 或设计文档中记录项目链接、许可证和参考范围。
-- [ ] AI 辅助生成内容已由维护者审阅。
+## 双仓库
 
-## 双仓库同步
-
-- [ ] 本地工作树干净，只包含本次计划内变更。
-- [ ] 提交信息使用 `feat:`、`fix:`、`test:`、`docs:` 或 `chore:` 前缀。
-- [ ] 推送到 GitLink：`git push origin master`
-- [ ] 推送到 GitHub：`git push github master`
-- [ ] 两个远端的目标分支指向同一提交。
-
-## 终验展示
-
-- [ ] 准备 3 分钟 demo：文本包索引、求解结果、lock 输出、冲突诊断。
-- [ ] 准备 1 页项目亮点：MoonBit 生态价值、核心 API、测试与 CI、后续维护计划。
-- [ ] 验收前运行 `moon coverage analyze > uncovered.log`，根据结果补测试或记录风险。
+- [ ] 三个计划提交的 author/committer 均为 python123。
+- [ ] 快进合并到 `master`。
+- [ ] `git push origin master` 与 `git push github master`。
+- [ ] 两个远端 `master` SHA 一致。
+- [ ] 两个 fresh clone 的身份检查、测试和 demo 通过。

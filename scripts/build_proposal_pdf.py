@@ -2,14 +2,18 @@ from pathlib import Path
 import hashlib
 
 from docx import Document
-from docx.shared import Pt
+from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+from docx.shared import Cm, Pt, RGBColor
+from pypdf import PdfReader
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import cm
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase import pdfdoc
+from reportlab.pdfbase import pdfdoc, pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
@@ -19,11 +23,34 @@ OUT_DIR = ROOT / "docs" / "competition"
 PDF_PATH = OUT_DIR / "MoonDepSolve项目申报书.pdf"
 DOCX_PATH = OUT_DIR / "MoonDepSolve项目申报书.docx"
 
-TITLE = "MoonDepSolve 项目申报书"
-PROJECT_NAME = "MoonDepSolve：MoonBit 包生态语义版本与依赖求解工具"
+TITLE = "MoonDepSolve v0.2 项目申报书"
+SUBTITLE = "MoonBit 包生态语义版本与依赖求解基础库"
 GITLINK_URL = "https://gitlink.org.cn/python123/moondepsolve"
 GITHUB_URL = "https://github.com/python123-ops/moondepsolve"
-CORE_AUTHOR = "python123"
+AUTHOR = "python123"
+
+SECTIONS = [
+    (
+        "项目定位",
+        "MoonDepSolve 面向 MoonBit 包生态，解决版本约束解析、兼容版本选择、传递依赖展开与冲突解释问题，可复用于包管理器、构建工具、依赖审计、自动化发布和教学示例。",
+    ),
+    (
+        "v0.2 核心成果",
+        "保持 v0.1 API 兼容；支持 exact、caret、tilde、comparator set、wildcard 与最高兼容求解；支持文本 registry 和 lock 读回；新增稳定 DependencyGraph 文本/DOT 输出、Unresolved 节点，以及覆盖缺包、无匹配版本、已选版本冲突的 ConflictReport。CLI 可同时展示 lock、依赖图和候选版本降序冲突报告。",
+    ),
+    (
+        "技术路线与生态价值",
+        "采用“语义版本解析—约束归一化—候选排序—递归求解—图/诊断输出”边界，全部使用 MoonBit 实现，不依赖外部服务。公共接口由 moon info 生成的 .mbti 审核，为 MoonBit 工具链补充可复用、可解释、可测试的依赖求解能力。",
+    ),
+    (
+        "工程质量与公开维护",
+        "19 项测试覆盖版本边界、错误索引/lock、求解冲突、图稳定性和 DOT 转义，核心 moondepsolve.mbt 无未覆盖行。CI 拉取完整历史，先检查 author/committer 仅为 python123，再执行接口、格式、覆盖率测试与 CLI。仓库提供 Apache-2.0、README、Changelog、贡献/安全规范和 Issue/PR 模板。",
+    ),
+    (
+        "赛事进度与后续计划",
+        "官方开发期为 2026-04-29 至 2026-07-12，验收期为 7 月 13-17 日。4 月 29 日后新增求解/索引/lock、v0.2 图和冲突报告、边界测试、身份门禁、CI 与材料。验收前完成 Mooncakes dry-run 和双远端 fresh clone；v0.3 推进最高兼容升级建议与最小变更升级计划。",
+    ),
+]
 
 
 def _compatible_md5(data=b"", **_kwargs):
@@ -32,51 +59,15 @@ def _compatible_md5(data=b"", **_kwargs):
 
 pdfdoc.md5 = _compatible_md5
 
-SECTIONS = [
-    (
-        "一、项目简介",
-        "MoonDepSolve 面向 MoonBit 包生态中的版本约束和依赖选择问题，提供语义版本解析、版本范围匹配、依赖图求解、冲突诊断、依赖锁定结果输出、轻量文本包索引读入和 lock 读回能力。项目使用 MoonBit 编写，不依赖外部服务，适合在包管理、构建规划、依赖检查和自动化发布流程中作为基础组件使用。",
-    ),
-    (
-        "二、项目方向与适用场景",
-        "依赖求解是包管理和构建系统中的基础能力。随着 MoonBit 包数量增加，工具链需要能够判断版本兼容性、选择可用版本组合、解释依赖冲突，并形成稳定的解析结果。MoonDepSolve 可服务于依赖安装、构建规划、兼容性检查、依赖升级建议和教学示例等场景。",
-    ),
-    (
-        "三、计划实现的核心功能",
-        "项目目前实现语义版本解析、prerelease 排序、exact/caret/tilde/comparator/wildcard 五类约束解析、版本匹配、传递依赖求解、最高兼容版本选择、冲突路径诊断、依赖锁定结果输出、文本包索引读入和 lock 读回。命令行示例会展示一个内置包索引的求解过程，测试覆盖成功解析和失败诊断场景。",
-    ),
-    (
-        "四、实现说明",
-        "项目代码围绕 MoonBit 版本约束场景自行设计数据结构、解析器、求解流程和错误诊断。目前版本控制在较小规模内，不引入外部依赖，也不绑定具体平台接口，便于评审直接克隆、运行和检查。",
-    ),
-    (
-        "五、技术路线",
-        "项目采用“解析层、约束层、求解层、展示层”的结构。解析层负责版本和约束字符串；约束层将范围统一表示为 comparator 数组；求解层从根依赖开始遍历包索引，选择最高兼容版本并展开传递依赖；诊断层在包缺失、无匹配版本或已选版本冲突时输出可读错误；展示层通过 CLI 和依赖锁定结果文本展示结果。",
-    ),
-    (
-        "六、预期成果",
-        "项目预期交付一个可运行的 MoonBit 依赖求解基础库，一组覆盖版本解析、约束匹配、传递依赖、冲突诊断、文本索引读入和 lock 读回的测试，一个可通过 moon run cmd/main 执行的 CLI 示例，以及 README、设计文档、验收清单、发布清单和本申报书。仓库将同步到 GitLink 与 GitHub，便于评审克隆和复现。",
-    ),
-    (
-        "七、后续计划",
-        "后续计划接入更完整的真实包索引读取、结构化锁文件读写、最小变更升级建议、依赖图输出、冲突图解释、构建计划生成和 MoonBit 包发布流程。相比单一文本处理工具，依赖求解方向更贴近包生态和构建工具链中的基础需求。",
-    ),
-    (
-        "八、开源维护与合规",
-        "项目采用 Apache-2.0 许可证，GitLink 仓库作为比赛验收主仓库，GitHub 仓库作为同步镜像。后续维护会保持清晰提交记录、README、CI、测试、接口摘要和 Mooncakes 发布说明。若参考其他生态中的 semver 或 resolver 项目，会在文档中说明参考来源、链接、许可证和实际参考范围，不提交未经授权的私有代码、闭源代码、商业代码或来源不明的生成内容。",
-    ),
-]
-
 
 def register_font() -> str:
-    candidates = [
+    for path in [
         Path("C:/Windows/Fonts/msyh.ttc"),
         Path("C:/Windows/Fonts/simhei.ttf"),
         Path("C:/Windows/Fonts/simsun.ttc"),
-    ]
-    for font in candidates:
-        if font.exists():
-            pdfmetrics.registerFont(TTFont("MoonDepSolveCN", str(font)))
+    ]:
+        if path.exists():
+            pdfmetrics.registerFont(TTFont("MoonDepSolveCN", str(path)))
             return "MoonDepSolveCN"
     return "Helvetica"
 
@@ -84,115 +75,219 @@ def register_font() -> str:
 def build_pdf() -> None:
     font = register_font()
     styles = getSampleStyleSheet()
-    title = ParagraphStyle(
+    title_style = ParagraphStyle(
         "TitleCN",
         parent=styles["Title"],
         fontName=font,
         fontSize=22,
-        leading=30,
+        leading=27,
         alignment=TA_CENTER,
-        spaceAfter=20,
+        textColor=colors.HexColor("#17365D"),
+        spaceAfter=3,
     )
-    heading = ParagraphStyle(
+    subtitle_style = ParagraphStyle(
+        "SubtitleCN",
+        parent=styles["BodyText"],
+        fontName=font,
+        fontSize=11,
+        leading=14,
+        alignment=TA_CENTER,
+        textColor=colors.HexColor("#4B5563"),
+        spaceAfter=11,
+    )
+    heading_style = ParagraphStyle(
         "HeadingCN",
         parent=styles["Heading2"],
         fontName=font,
         fontSize=13,
-        leading=18,
-        textColor=colors.HexColor("#1f3b73"),
-        spaceBefore=10,
-        spaceAfter=6,
+        leading=17,
+        textColor=colors.HexColor("#1F4D78"),
+        spaceBefore=8,
+        spaceAfter=3,
     )
-    body = ParagraphStyle(
+    body_style = ParagraphStyle(
         "BodyCN",
         parent=styles["BodyText"],
         fontName=font,
-        fontSize=10.5,
-        leading=17,
-        firstLineIndent=21,
-        spaceAfter=5,
+        fontSize=10.2,
+        leading=16,
+        firstLineIndent=20.4,
+        textColor=colors.HexColor("#222222"),
+        spaceAfter=2,
     )
-    meta = ParagraphStyle(
+    meta_style = ParagraphStyle(
         "MetaCN",
         parent=styles["BodyText"],
         fontName=font,
-        fontSize=10.5,
-        leading=16,
+        fontSize=8.7,
+        leading=11.5,
+        textColor=colors.HexColor("#263238"),
     )
 
-    doc = SimpleDocTemplate(
+    document = SimpleDocTemplate(
         str(PDF_PATH),
         pagesize=A4,
-        rightMargin=2 * cm,
-        leftMargin=2 * cm,
-        topMargin=1.8 * cm,
-        bottomMargin=1.8 * cm,
+        leftMargin=1.25 * cm,
+        rightMargin=1.25 * cm,
+        topMargin=1.05 * cm,
+        bottomMargin=1.05 * cm,
         title=TITLE,
+        author=AUTHOR,
+        subject=SUBTITLE,
     )
-    story = [Paragraph(TITLE, title)]
+    story = [
+        Paragraph(TITLE, title_style),
+        Paragraph(SUBTITLE, subtitle_style),
+    ]
+    metadata = [
+        [Paragraph("<b>作者</b>", meta_style), Paragraph(AUTHOR, meta_style),
+         Paragraph("<b>许可证</b>", meta_style), Paragraph("Apache-2.0", meta_style)],
+        [Paragraph("<b>GitLink</b>", meta_style), Paragraph(GITLINK_URL, meta_style),
+         Paragraph("<b>GitHub</b>", meta_style), Paragraph(GITHUB_URL, meta_style)],
+    ]
     table = Table(
-        [
-            [Paragraph("项目名称", meta), Paragraph(PROJECT_NAME, meta)],
-            [Paragraph("参赛方向", meta), Paragraph("MoonBit 国产基础软件开源生态项目", meta)],
-            [Paragraph("开源许可证", meta), Paragraph("Apache-2.0", meta)],
-            [Paragraph("核心作者", meta), Paragraph(CORE_AUTHOR, meta)],
-            [Paragraph("GitLink 仓库", meta), Paragraph(GITLINK_URL, meta)],
-            [Paragraph("GitHub 仓库", meta), Paragraph(GITHUB_URL, meta)],
-        ],
-        colWidths=[3.2 * cm, 12 * cm],
+        metadata,
+        colWidths=[1.7 * cm, 6.7 * cm, 1.7 * cm, 8 * cm],
+        hAlign="LEFT",
     )
     table.setStyle(
         TableStyle(
             [
                 ("FONTNAME", (0, 0), (-1, -1), font),
-                ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#edf3ff")),
-                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#9aa9c7")),
+                ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#E8EEF5")),
+                ("BACKGROUND", (2, 0), (2, -1), colors.HexColor("#E8EEF5")),
+                ("BOX", (0, 0), (-1, -1), 0.45, colors.HexColor("#9AA9B8")),
+                ("INNERGRID", (0, 0), (-1, -1), 0.3, colors.HexColor("#C5CDD5")),
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                ("LEFTPADDING", (0, 0), (-1, -1), 8),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 8),
-                ("TOPPADDING", (0, 0), (-1, -1), 6),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+                ("LEFTPADDING", (0, 0), (-1, -1), 5),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+                ("TOPPADDING", (0, 0), (-1, -1), 3),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
             ]
         )
     )
-    story.extend([table, Spacer(1, 0.4 * cm)])
-    for section_title, text in SECTIONS:
-        story.append(Paragraph(section_title, heading))
-        story.append(Paragraph(text, body))
-    doc.build(story)
+    story.extend([table, Spacer(1, 0.15 * cm)])
+    for heading, text in SECTIONS:
+        story.append(Paragraph(heading, heading_style))
+        story.append(Paragraph(text, body_style))
+    document.build(story)
+
+    pages = len(PdfReader(str(PDF_PATH)).pages)
+    if pages != 1:
+        raise RuntimeError(f"Proposal PDF must be exactly one page, got {pages}")
+
+
+def set_cell_shading(cell, fill: str) -> None:
+    properties = cell._tc.get_or_add_tcPr()
+    shading = OxmlElement("w:shd")
+    shading.set(qn("w:fill"), fill)
+    properties.append(shading)
+
+
+def set_cell_width(cell, width_twips: int) -> None:
+    properties = cell._tc.get_or_add_tcPr()
+    width = properties.find(qn("w:tcW"))
+    if width is None:
+        width = OxmlElement("w:tcW")
+        properties.append(width)
+    width.set(qn("w:w"), str(width_twips))
+    width.set(qn("w:type"), "dxa")
+
+
+def set_run_font(run, name: str, size: float, bold: bool = False) -> None:
+    run.font.name = name
+    run.font.size = Pt(size)
+    run.font.bold = bold
+    run._element.get_or_add_rPr().get_or_add_rFonts().set(qn("w:eastAsia"), name)
 
 
 def build_docx() -> None:
-    doc = Document()
-    doc.styles["Normal"].font.name = "Microsoft YaHei"
-    doc.styles["Normal"].font.size = Pt(10.5)
-    title = doc.add_heading(TITLE, level=0)
-    title.alignment = 1
-    table = doc.add_table(rows=6, cols=2)
+    document = Document()
+    section = document.sections[0]
+    section.page_width = Cm(21)
+    section.page_height = Cm(29.7)
+    section.left_margin = Cm(1.25)
+    section.right_margin = Cm(1.25)
+    section.top_margin = Cm(1.05)
+    section.bottom_margin = Cm(1.05)
+    section.header_distance = Cm(0.4)
+    section.footer_distance = Cm(0.4)
+
+    normal = document.styles["Normal"]
+    normal.font.name = "Microsoft YaHei"
+    normal.font.size = Pt(10.2)
+    normal.paragraph_format.space_after = Pt(2)
+    normal.paragraph_format.line_spacing = 1.15
+
+    title = document.add_paragraph()
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    title.paragraph_format.space_after = Pt(1)
+    run = title.add_run(TITLE)
+    set_run_font(run, "Microsoft YaHei", 22, True)
+    run.font.color.rgb = RGBColor(0x17, 0x36, 0x5D)
+
+    subtitle = document.add_paragraph()
+    subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    subtitle.paragraph_format.space_after = Pt(5)
+    run = subtitle.add_run(SUBTITLE)
+    set_run_font(run, "Microsoft YaHei", 11)
+    run.font.color.rgb = RGBColor(0x4B, 0x55, 0x63)
+
+    table = document.add_table(rows=2, cols=4)
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    table.autofit = False
     table.style = "Table Grid"
+    widths = [1224, 4824, 1224, 5760]
     rows = [
-        ("项目名称", PROJECT_NAME),
-        ("参赛方向", "MoonBit 国产基础软件开源生态项目"),
-        ("开源许可证", "Apache-2.0"),
-        ("核心作者", CORE_AUTHOR),
-        ("GitLink 仓库", GITLINK_URL),
-        ("GitHub 仓库", GITHUB_URL),
+        ("作者", AUTHOR, "许可证", "Apache-2.0"),
+        ("GitLink", GITLINK_URL, "GitHub", GITHUB_URL),
     ]
-    for row, (key, value) in zip(table.rows, rows):
-        row.cells[0].text = key
-        row.cells[1].text = value
-    for section_title, text in SECTIONS:
-        doc.add_heading(section_title, level=1)
-        doc.add_paragraph(text)
-    doc.save(DOCX_PATH)
+    for row, values in zip(table.rows, rows):
+        for index, (cell, value) in enumerate(zip(row.cells, values)):
+            set_cell_width(cell, widths[index])
+            cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
+            paragraph = cell.paragraphs[0]
+            paragraph.paragraph_format.space_after = Pt(0)
+            run = paragraph.add_run(value)
+            set_run_font(run, "Microsoft YaHei", 8.7, index in (0, 2))
+            if index in (0, 2):
+                set_cell_shading(cell, "E8EEF5")
+
+    for heading, text in SECTIONS:
+        paragraph = document.add_paragraph()
+        paragraph.paragraph_format.space_before = Pt(7)
+        paragraph.paragraph_format.space_after = Pt(2)
+        run = paragraph.add_run(heading)
+        set_run_font(run, "Microsoft YaHei", 13, True)
+        run.font.color.rgb = RGBColor(0x1F, 0x4D, 0x78)
+
+        paragraph = document.add_paragraph()
+        paragraph.paragraph_format.first_line_indent = Pt(20.4)
+        paragraph.paragraph_format.space_after = Pt(2)
+        paragraph.paragraph_format.line_spacing = 1.15
+        run = paragraph.add_run(text)
+        set_run_font(run, "Microsoft YaHei", 10.2)
+
+    footer = section.footer.paragraphs[0]
+    footer.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    run = footer.add_run("MoonDepSolve v0.2 · 2026-06-18")
+    set_run_font(run, "Microsoft YaHei", 7.5)
+    run.font.color.rgb = RGBColor(0x6B, 0x72, 0x80)
+
+    document.core_properties.title = TITLE
+    document.core_properties.subject = SUBTITLE
+    document.core_properties.author = AUTHOR
+    document.core_properties.last_modified_by = AUTHOR
+    document.core_properties.keywords = "MoonBit, dependency resolver, OSC2026"
+    document.save(DOCX_PATH)
 
 
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     build_pdf()
     build_docx()
-    print(PDF_PATH)
-    print(DOCX_PATH)
+    print(f"Generated one-page PDF: {PDF_PATH}")
+    print(f"Generated DOCX: {DOCX_PATH}")
 
 
 if __name__ == "__main__":

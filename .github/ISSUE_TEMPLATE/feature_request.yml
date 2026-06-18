@@ -1,0 +1,30 @@
+name: Feature request
+description: Propose a reusable MoonBit ecosystem capability
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: use_case
+    attributes:
+      label: MoonBit ecosystem use case
+      description: Explain who needs this and why existing APIs are insufficient.
+    validations:
+      required: true
+  - type: textarea
+    id: api
+    attributes:
+      label: Proposed behavior or API
+    validations:
+      required: true
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility and alternatives
+      description: Note v0.1/v0.2 compatibility impact and alternatives considered.
+  - type: checkboxes
+    id: provenance
+    attributes:
+      label: Provenance
+      options:
+        - label: Any referenced project and license are identified.
+          required: true
