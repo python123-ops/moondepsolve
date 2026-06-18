@@ -366,7 +366,10 @@ fn solve(
         }
         return Err(PackageNotFound(current.dependency.name))
       }
-      let mut last_error : DepError? = None
+      let mut last_error : DepError = NoMatchingVersion(
+        current.dependency.name,
+        current.dependency.req.raw,
+      )
       for candidate in candidates {
         let next_selected = selected.copy()
         next_selected.push(candidate)
@@ -380,19 +383,10 @@ fn solve(
         }
         match solve(registry, next_selected, next_pending) {
           Ok(result) => return Ok(result)
-          Err(err) => last_error = Some(err)
+          Err(err) => last_error = err
         }
       }
-      match last_error {
-        Some(err) => Err(err)
-        None =>
-          Err(
-            NoMatchingVersion(
-              current.dependency.name,
-              current.dependency.req.raw,
-            ),
-          )
-      }
+      Err(last_error)
     }
   }
 }
@@ -449,9 +443,6 @@ fn parse_comparator_req(input : String) -> Result[VersionReq, DepError] {
         Err(err) => return Err(err)
       }
     }
-  }
-  if comparators.length() == 0 {
-    return Err(InvalidReq(input, "empty comparator requirement"))
   }
   Ok({ raw: input, comparators })
 }

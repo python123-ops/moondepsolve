@@ -197,3 +197,136 @@ test "parse lock output back into a resolution" {
   assert_eq(resolution.packages[1].name, "core")
   assert_eq(version_text(resolution.packages[1].version), "1.2.0")
 }
+
+///|
+test "reject invalid semantic version forms" {
+  match @moondepsolve.parse_version("1.2.3-") {
+    Err(err) =>
+      assert_eq(
+        @moondepsolve.format_error(err),
+        "invalid version '1.2.3-': empty prerelease identifier",
+      )
+    Ok(_) => abort("expected empty prerelease to fail")
+  }
+  match @moondepsolve.parse_version("1.a.3") {
+    Err(err) =>
+      assert_eq(
+        @moondepsolve.format_error(err),
+        "invalid version '1.a.3': version segments must be numeric",
+      )
+    Ok(_) => abort("expected non-numeric segment to fail")
+  }
+  match @moondepsolve.parse_version(".1.2") {
+    Err(_) => ()
+    Ok(_) => abort("expected empty segment to fail")
+  }
+  assert_eq(version_text(version_ok("1.2.3-alpha")), "1.2.3-alpha")
+}
+
+///|
+test "cover semantic prerelease comparison branches" {
+  assert_true(
+    @moondepsolve.compare_version(version_ok("1.0.0"), version_ok("1.0.0-a")) >
+    0,
+  )
+  assert_true(
+    @moondepsolve.compare_version(version_ok("1.0.0-a"), version_ok("1.0.0")) <
+    0,
+  )
+  assert_true(
+    @moondepsolve.compare_version(
+      version_ok("1.0.0-alpha"),
+      version_ok("1.0.0-alpha.1"),
+    ) <
+    0,
+  )
+  assert_true(
+    @moondepsolve.compare_version(
+      version_ok("1.0.0-1"),
+      version_ok("1.0.0-alpha"),
+    ) <
+    0,
+  )
+  assert_true(
+    @moondepsolve.compare_version(
+      version_ok("1.0.0-alpha"),
+      version_ok("1.0.0-1"),
+    ) >
+    0,
+  )
+}
+
+///|
+test "reject invalid requirements and cover comparator boundaries" {
+  for input in ["", "^bad", "~bad", "bad", ">=bad", "wat ever"] {
+    match @moondepsolve.parse_req(input) {
+      Err(_) => ()
+      Ok(_) => abort("expected invalid requirement: " + input)
+    }
+  }
+  for input in ["1.x", "1.two.x", "1.2.xbad"] {
+    match @moondepsolve.parse_req(input) {
+      Err(_) => ()
+      Ok(_) => abort("expected invalid wildcard: " + input)
+    }
+  }
+  assert_true(@moondepsolve.matches(version_ok("1.0.0"), req_ok(">0.9.0")))
+  assert_false(@moondepsolve.matches(version_ok("1.0.0"), req_ok(">1.0.0")))
+  assert_true(@moondepsolve.matches(version_ok("1.0.0"), req_ok("<=1.0.0")))
+  assert_false(@moondepsolve.matches(version_ok("1.0.1"), req_ok("<=1.0.0")))
+  assert_true(@moondepsolve.matches(version_ok("1.0.0"), req_ok("=1.0.0")))
+  assert_true(@moondepsolve.matches(version_ok("0.2.8"), req_ok("^0.2.0")))
+  assert_false(@moondepsolve.matches(version_ok("0.3.0"), req_ok("^0.2.0")))
+  assert_true(@moondepsolve.matches(version_ok("0.0.4"), req_ok("^0.0.4")))
+  assert_false(@moondepsolve.matches(version_ok("0.0.5"), req_ok("^0.0.4")))
+}
+
+///|
+test "report malformed lock and registry inputs" {
+  for input in ["broken", "core bad"] {
+    match @moondepsolve.parse_lock(input) {
+      Err(_) => ()
+      Ok(_) => abort("expected malformed lock to fail")
+    }
+  }
+  for
+    input in [
+      "broken", "core bad", "core 1.0.0 | missing-colon", "core 1.0.0 | : ^1.0.0",
+      "core 1.0.0 | dep: bad",
+    ] {
+    match @moondepsolve.parse_registry(input) {
+      Err(err) => assert_true(@moondepsolve.format_error(err).length() > 0)
+      Ok(_) => abort("expected malformed registry to fail")
+    }
+  }
+  assert_eq(
+    @moondepsolve.format_error(InvalidReq("x", "reason")),
+    "invalid requirement 'x': reason",
+  )
+  assert_eq(
+    @moondepsolve.format_error(PackageNotFound("ghost")),
+    "package not found: ghost",
+  )
+  assert_eq(
+    @moondepsolve.format_error(NoMatchingVersion("core", "^2.0.0")),
+    "no version of core satisfies ^2.0.0",
+  )
+}
+
+///|
+test "report missing packages and unavailable versions" {
+  let repo = registry([pkg("core", "1.0.0", [])])
+  match @moondepsolve.resolve([dep("ghost", "1.0.0")], repo) {
+    Err(PackageNotFound("ghost")) => ()
+    _ => abort("expected package-not-found error")
+  }
+  match @moondepsolve.resolve([dep("core", "^2.0.0")], repo) {
+    Err(NoMatchingVersion("core", "^2.0.0")) => ()
+    _ => abort("expected no-matching-version error")
+  }
+  match
+    @moondepsolve.resolve([dep("core", "1.0.0"), dep("core", "^1.0.0")], repo) {
+    Ok(result) => assert_eq(result.packages.length(), 1)
+    Err(err) => abort(@moondepsolve.format_error(err))
+  }
+}

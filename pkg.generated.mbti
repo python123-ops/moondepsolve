@@ -2,9 +2,19 @@
 package "python123/moondepsolve"
 
 // Values
+pub fn build_conflict_report(DepError, Registry) -> ConflictReport?
+
+pub fn build_dependency_graph(Array[Dependency], Resolution) -> DependencyGraph
+
 pub fn compare_version(Version, Version) -> Int
 
+pub fn format_conflict_report(ConflictReport) -> String
+
 pub fn format_error(DepError) -> String
+
+pub fn format_graph_dot(DependencyGraph) -> String
+
+pub fn format_graph_text(DependencyGraph) -> String
 
 pub fn format_lock(Resolution) -> String
 
@@ -38,6 +48,21 @@ pub(all) enum CompareOp {
   Lte
 } derive(Eq)
 
+pub(all) enum ConflictKind {
+  MissingPackage
+  NoMatchingVersion
+  SelectedVersionConflict
+} derive(Eq)
+
+pub(all) struct ConflictReport {
+  kind : ConflictKind
+  package : String
+  requirement : String?
+  selected_version : String?
+  dependency_path : String?
+  available_versions : Array[Version]
+} derive(Eq)
+
 pub(all) enum DepError {
   InvalidVersion(String, String)
   InvalidReq(String, String)
@@ -49,6 +74,23 @@ pub(all) enum DepError {
 pub(all) struct Dependency {
   name : String
   req : VersionReq
+} derive(Eq)
+
+pub(all) struct DependencyEdge {
+  from : GraphNode
+  to : GraphNode
+  requirement : String
+} derive(Eq)
+
+pub(all) struct DependencyGraph {
+  nodes : Array[GraphNode]
+  edges : Array[DependencyEdge]
+} derive(Eq)
+
+pub(all) enum GraphNode {
+  Root
+  Package(String, Version)
+  Unresolved(String)
 } derive(Eq)
 
 pub(all) struct PackageVersion {

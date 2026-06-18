@@ -18,12 +18,29 @@ fn main {
   }
   println("MoonDepSolve demo")
   println("root=appkit@1.0.0")
-  match @moondepsolve.resolve([dependency("appkit", "1.0.0")], registry) {
+  let root = [dependency("appkit", "1.0.0")]
+  match @moondepsolve.resolve(root, registry) {
     Ok(result) => {
       println("resolved=\{result.packages.length()}")
       println(@moondepsolve.format_lock(result))
+      println("Dependency graph")
+      println(
+        @moondepsolve.format_graph_text(
+          @moondepsolve.build_dependency_graph(root, result),
+        ),
+      )
     }
     Err(err) => println(@moondepsolve.format_error(err))
+  }
+  let conflict : @moondepsolve.DepError = VersionConflict(
+    "core", "1.2.0", "^2.0.0", "root -> appkit@1.0.0 -> core",
+  )
+  match @moondepsolve.build_conflict_report(conflict, registry) {
+    Some(report) => {
+      println("Conflict report")
+      println(@moondepsolve.format_conflict_report(report))
+    }
+    None => ()
   }
 }
 
