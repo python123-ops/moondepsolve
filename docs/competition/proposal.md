@@ -1,4 +1,4 @@
-# MoonDepSolve v0.2 项目申报书
+# MoonDepSolve v0.3 项目申报书
 
 **参赛作者：** python123
 
@@ -9,25 +9,24 @@
 
 ## 项目定位
 
-MoonDepSolve 是面向 MoonBit 包生态的语义版本与确定性依赖求解基础库。项目解决版本约束解析、兼容版本选择、传递依赖展开和冲突解释问题，可复用于包管理器、构建工具、依赖审计、自动化发布与教学示例。
+MoonDepSolve 是面向 MoonBit 包生态的语义版本、依赖求解与升级规划基础库。项目覆盖版本约束解析、传递依赖选择、稳定 lock、依赖图、冲突解释和升级方案生成，可复用于包管理器、构建工具、依赖审计与自动化发布流程。
 
-## v0.2 核心成果
+## v0.3 核心成果
 
-- 保持 v0.1 的 `parse_version`、`parse_req`、`matches`、`resolve`、`format_lock` 等 API 兼容。
-- 支持 exact、caret、tilde、comparator set、wildcard，稳定选择最高兼容版本。
-- 支持文本 registry 与 lock 读回，便于离线样例和集成测试。
-- 新增结构化 `DependencyGraph`，稳定输出文本与 Graphviz DOT；不完整 Resolution 显式生成 `Unresolved` 节点。
-- 新增 `ConflictReport`，覆盖缺包、无匹配版本与已选版本冲突，保留依赖路径并按降序列出候选版本。
-- CLI 可一次展示 lock、依赖图和冲突报告；核心 `moondepsolve.mbt` 无未覆盖行。
+- 保持 v0.1/v0.2 的解析、匹配、求解、lock、依赖图和冲突报告 API 兼容。
+- 新增 `HighestCompatible` 与精确 `MinimalChange`：先最小化变更包数量，同成本时稳定偏好更高版本；有界搜索超过上限时明确报错。
+- 新增结构化 `UpgradePlan`，稳定区分 add、remove、upgrade、downgrade，并返回目标 Resolution。
+- 新增原生文件 CLI：从 registry/lock 执行 `resolve` 和 `plan`，输出 lock、文本图或 Graphviz DOT。
+- 提供四组 expected 输出与一键演示脚本，真实覆盖文件读取、解析、求解、图导出和升级规划链路。
 
 ## 技术路线与 MoonBit 价值
 
-项目采用“语义版本解析 -> 约束归一化 -> 候选排序 -> 递归求解 -> 图/诊断输出”的边界。实现全部使用 MoonBit，公共接口由 `moon info` 生成的 `.mbti` 审核，不依赖外部服务。它为 MoonBit 包生态补充可复用的版本约束、依赖求解和可解释诊断能力，也提供一套可直接克隆、测试和扩展的基础软件示例。
+项目采用“版本解析 -> 约束匹配 -> 候选稳定排序 -> 递归求解/有界精确搜索 -> lock/图/诊断输出”的边界。核心算法与公共模型使用 MoonBit 编写，`.mbti` 由 `moon info` 生成审阅；native CLI 使用官方 `moonbitlang/async/fs`。项目为 MoonBit 工具链补充可复用、可解释、可测试的依赖基础能力，也展示了 MoonBit 库 API 与原生文件工具的完整工程路径。
 
 ## 工程质量与公开维护
 
-项目使用 Apache-2.0；CI 拉取完整历史，先强制检查所有 author/committer 均为 `python123 <python123@users.noreply.gitlink.org.cn>`，再执行 `moon info`、`moon fmt --check`、覆盖率测试和 CLI。仓库包含 README、Changelog、贡献指南、安全策略、Issue/PR 模板、发布清单和一页申报书。AI 仅作为辅助，方向、代码审查与开源合规由维护者负责。
+2026-06-21 基线为默认后端 27 项、native 后端 31 项测试通过，另有 4 组 CLI expected 输出回归。CI 使用完整历史，先检查所有 author/committer 均为 `python123 <python123@users.noreply.gitlink.org.cn>`，再检查接口、格式、诊断、覆盖率、native CLI 与演示。仓库提供 Apache-2.0、README、Changelog、贡献/安全规范、Issue/PR 模板、发布清单和第三方许可证记录。
 
-## 赛事计划
+## 赛事进度与交付
 
-官方当前开发期为 **2026-04-29 至 2026-07-12**，验收期为 **7 月 13-17 日**。4 月 29 日后新增工作包括求解/索引/lock、v0.2 图与冲突报告、边界测试、身份门禁、CI、文档与发布材料。验收前完成 Mooncakes dry-run、双远端 fresh clone 复验；后续 v0.3 推进最高兼容升级建议和最小变更升级计划。
+官方开发期为 **2026-04-29 至 2026-07-12**，验收期为 **2026-07-13 至 2026-07-17**。4 月 29 日后完成 v0.1 求解基础、v0.2 图与冲突解释、v0.3 精确升级规划和文件 CLI，并持续补充测试、CI、身份门禁和材料。终验交付包括双仓库一致历史、v0.3.0 标签/Release、fresh clone 复验及 Mooncakes dry-run；实际发布由 `python123` 通过 GitHub 授权后执行。

@@ -23,32 +23,32 @@ OUT_DIR = ROOT / "docs" / "competition"
 PDF_PATH = OUT_DIR / "MoonDepSolve项目申报书.pdf"
 DOCX_PATH = OUT_DIR / "MoonDepSolve项目申报书.docx"
 
-TITLE = "MoonDepSolve v0.2 项目申报书"
-SUBTITLE = "MoonBit 包生态语义版本与依赖求解基础库"
-GITLINK_URL = "https://gitlink.org.cn/python123/moondepsolve"
-GITHUB_URL = "https://github.com/python123-ops/moondepsolve"
+TITLE = "MoonDepSolve v0.3 项目申报书"
+SUBTITLE = "MoonBit 包生态语义版本、依赖求解与升级规划基础库"
+GITLINK_LABEL = "gitlink.org.cn/python123/moondepsolve"
+GITHUB_LABEL = "github.com/python123-ops/moondepsolve"
 AUTHOR = "python123"
 
 SECTIONS = [
     (
         "项目定位",
-        "MoonDepSolve 面向 MoonBit 包生态，解决版本约束解析、兼容版本选择、传递依赖展开与冲突解释问题，可复用于包管理器、构建工具、依赖审计、自动化发布和教学示例。",
+        "MoonDepSolve 面向 MoonBit 包生态，覆盖版本约束、传递依赖求解、稳定 lock、依赖图、冲突解释和升级规划，可复用于包管理器、构建工具、依赖审计与自动化发布。",
     ),
     (
-        "v0.2 核心成果",
-        "保持 v0.1 API 兼容；支持 exact、caret、tilde、comparator set、wildcard 与最高兼容求解；支持文本 registry 和 lock 读回；新增稳定 DependencyGraph 文本/DOT 输出、Unresolved 节点，以及覆盖缺包、无匹配版本、已选版本冲突的 ConflictReport。CLI 可同时展示 lock、依赖图和候选版本降序冲突报告。",
+        "v0.3 核心成果",
+        "保持 v0.1/v0.2 API 兼容；新增 HighestCompatible 与精确 MinimalChange，先最小化变更包数量，同成本时稳定偏好更高版本；新增 UpgradePlan 及有界搜索错误。原生文件 CLI 可从 registry/lock 执行 resolve 和 plan，输出 lock、文本图或 Graphviz DOT。",
     ),
     (
         "技术路线与生态价值",
-        "采用“语义版本解析—约束归一化—候选排序—递归求解—图/诊断输出”边界，全部使用 MoonBit 实现，不依赖外部服务。公共接口由 moon info 生成的 .mbti 审核，为 MoonBit 工具链补充可复用、可解释、可测试的依赖求解能力。",
+        "采用“版本解析 -> 约束匹配 -> 候选稳定排序 -> 递归求解/有界精确搜索 -> lock/图/诊断输出”边界。核心算法使用 MoonBit，公共接口由 moon info 生成的 .mbti 审核；文件工具使用官方 moonbitlang/async/fs，为 MoonBit 工具链补充可复用、可解释、可测试的依赖能力。",
     ),
     (
         "工程质量与公开维护",
-        "19 项测试覆盖版本边界、错误索引/lock、求解冲突、图稳定性和 DOT 转义，核心 moondepsolve.mbt 无未覆盖行。CI 拉取完整历史，先检查 author/committer 仅为 python123，再执行接口、格式、覆盖率测试与 CLI。仓库提供 Apache-2.0、README、Changelog、贡献/安全规范和 Issue/PR 模板。",
+        "默认后端 27 项、native 后端 31 项测试通过，另有 4 组 CLI expected 输出回归。CI 拉取完整历史，先检查 author/committer 仅为 python123，再检查接口、格式、诊断、覆盖率和 native CLI。仓库提供 Apache-2.0、README、Changelog、贡献/安全规范、模板与第三方许可证记录。",
     ),
     (
-        "赛事进度与后续计划",
-        "官方开发期为 2026-04-29 至 2026-07-12，验收期为 7 月 13-17 日。4 月 29 日后新增求解/索引/lock、v0.2 图和冲突报告、边界测试、身份门禁、CI 与材料。验收前完成 Mooncakes dry-run 和双远端 fresh clone；v0.3 推进最高兼容升级建议与最小变更升级计划。",
+        "赛事进度与交付",
+        "官方开发期为 2026-04-29 至 2026-07-12，验收期为 2026-07-13 至 2026-07-17。4 月 29 日后完成 v0.1 求解基础、v0.2 图与冲突解释、v0.3 精确升级规划和文件 CLI。终验交付双仓库一致历史、v0.3.0 标签/Release、fresh clone 复验与 Mooncakes dry-run；发布由 python123 授权执行。",
     ),
 ]
 
@@ -79,8 +79,8 @@ def build_pdf() -> None:
         "TitleCN",
         parent=styles["Title"],
         fontName=font,
-        fontSize=22,
-        leading=27,
+        fontSize=23,
+        leading=28,
         alignment=TA_CENTER,
         textColor=colors.HexColor("#17365D"),
         spaceAfter=3,
@@ -89,11 +89,11 @@ def build_pdf() -> None:
         "SubtitleCN",
         parent=styles["BodyText"],
         fontName=font,
-        fontSize=11,
-        leading=14,
+        fontSize=11.5,
+        leading=15,
         alignment=TA_CENTER,
         textColor=colors.HexColor("#4B5563"),
-        spaceAfter=11,
+        spaceAfter=14,
     )
     heading_style = ParagraphStyle(
         "HeadingCN",
@@ -102,8 +102,8 @@ def build_pdf() -> None:
         fontSize=13,
         leading=17,
         textColor=colors.HexColor("#1F4D78"),
-        spaceBefore=8,
-        spaceAfter=3,
+        spaceBefore=10,
+        spaceAfter=4,
     )
     body_style = ParagraphStyle(
         "BodyCN",
@@ -113,7 +113,7 @@ def build_pdf() -> None:
         leading=16,
         firstLineIndent=20.4,
         textColor=colors.HexColor("#222222"),
-        spaceAfter=2,
+        spaceAfter=3,
     )
     meta_style = ParagraphStyle(
         "MetaCN",
@@ -142,12 +142,12 @@ def build_pdf() -> None:
     metadata = [
         [Paragraph("<b>作者</b>", meta_style), Paragraph(AUTHOR, meta_style),
          Paragraph("<b>许可证</b>", meta_style), Paragraph("Apache-2.0", meta_style)],
-        [Paragraph("<b>GitLink</b>", meta_style), Paragraph(GITLINK_URL, meta_style),
-         Paragraph("<b>GitHub</b>", meta_style), Paragraph(GITHUB_URL, meta_style)],
+        [Paragraph("<b>GitLink</b>", meta_style), Paragraph(GITLINK_LABEL, meta_style),
+         Paragraph("<b>GitHub</b>", meta_style), Paragraph(GITHUB_LABEL, meta_style)],
     ]
     table = Table(
         metadata,
-        colWidths=[1.7 * cm, 6.7 * cm, 1.7 * cm, 8 * cm],
+        colWidths=[1.6 * cm, 6.8 * cm, 1.6 * cm, 8.1 * cm],
         hAlign="LEFT",
     )
     table.setStyle(
@@ -194,6 +194,58 @@ def set_cell_width(cell, width_twips: int) -> None:
     width.set(qn("w:type"), "dxa")
 
 
+def set_cell_margins(cell) -> None:
+    properties = cell._tc.get_or_add_tcPr()
+    margins = properties.find(qn("w:tcMar"))
+    if margins is None:
+        margins = OxmlElement("w:tcMar")
+        properties.append(margins)
+    for side, value in (("top", 80), ("bottom", 80), ("start", 120), ("end", 120)):
+        element = margins.find(qn(f"w:{side}"))
+        if element is None:
+            element = OxmlElement(f"w:{side}")
+            margins.append(element)
+        element.set(qn("w:w"), str(value))
+        element.set(qn("w:type"), "dxa")
+
+
+def set_table_geometry(table, widths: list[int], indent: int = 120) -> None:
+    table.autofit = False
+    properties = table._tbl.tblPr
+    table_width = properties.find(qn("w:tblW"))
+    if table_width is None:
+        table_width = OxmlElement("w:tblW")
+        properties.append(table_width)
+    table_width.set(qn("w:w"), str(sum(widths)))
+    table_width.set(qn("w:type"), "dxa")
+
+    table_indent = properties.find(qn("w:tblInd"))
+    if table_indent is None:
+        table_indent = OxmlElement("w:tblInd")
+        properties.append(table_indent)
+    table_indent.set(qn("w:w"), str(indent))
+    table_indent.set(qn("w:type"), "dxa")
+
+    layout = properties.find(qn("w:tblLayout"))
+    if layout is None:
+        layout = OxmlElement("w:tblLayout")
+        properties.append(layout)
+    layout.set(qn("w:type"), "fixed")
+
+    grid = table._tbl.tblGrid
+    for child in list(grid):
+        grid.remove(child)
+    for width in widths:
+        column = OxmlElement("w:gridCol")
+        column.set(qn("w:w"), str(width))
+        grid.append(column)
+
+    for row in table.rows:
+        for cell, width in zip(row.cells, widths):
+            set_cell_width(cell, width)
+            set_cell_margins(cell)
+
+
 def set_run_font(run, name: str, size: float, bold: bool = False) -> None:
     run.font.name = name
     run.font.size = Pt(size)
@@ -216,35 +268,45 @@ def build_docx() -> None:
     normal = document.styles["Normal"]
     normal.font.name = "Microsoft YaHei"
     normal.font.size = Pt(10.2)
-    normal.paragraph_format.space_after = Pt(2)
+    normal.paragraph_format.space_after = Pt(3)
     normal.paragraph_format.line_spacing = 1.15
+    normal._element.rPr.rFonts.set(qn("w:eastAsia"), "Microsoft YaHei")
+
+    heading_style = document.styles["Heading 1"]
+    heading_style.font.name = "Microsoft YaHei"
+    heading_style.font.size = Pt(13)
+    heading_style.font.bold = True
+    heading_style.font.color.rgb = RGBColor(0x1F, 0x4D, 0x78)
+    heading_style.paragraph_format.space_before = Pt(10)
+    heading_style.paragraph_format.space_after = Pt(4)
+    heading_style.paragraph_format.keep_with_next = True
+    heading_style._element.rPr.rFonts.set(qn("w:eastAsia"), "Microsoft YaHei")
 
     title = document.add_paragraph()
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     title.paragraph_format.space_after = Pt(1)
     run = title.add_run(TITLE)
-    set_run_font(run, "Microsoft YaHei", 22, True)
+    set_run_font(run, "Microsoft YaHei", 23, True)
     run.font.color.rgb = RGBColor(0x17, 0x36, 0x5D)
 
     subtitle = document.add_paragraph()
     subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
     subtitle.paragraph_format.space_after = Pt(5)
     run = subtitle.add_run(SUBTITLE)
-    set_run_font(run, "Microsoft YaHei", 11)
+    set_run_font(run, "Microsoft YaHei", 11.5)
     run.font.color.rgb = RGBColor(0x4B, 0x55, 0x63)
 
     table = document.add_table(rows=2, cols=4)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
-    table.autofit = False
     table.style = "Table Grid"
-    widths = [1224, 4824, 1224, 5760]
+    widths = [950, 3750, 950, 4690]
+    set_table_geometry(table, widths)
     rows = [
         ("作者", AUTHOR, "许可证", "Apache-2.0"),
-        ("GitLink", GITLINK_URL, "GitHub", GITHUB_URL),
+        ("GitLink", GITLINK_LABEL, "GitHub", GITHUB_LABEL),
     ]
     for row, values in zip(table.rows, rows):
         for index, (cell, value) in enumerate(zip(row.cells, values)):
-            set_cell_width(cell, widths[index])
             cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
             paragraph = cell.paragraphs[0]
             paragraph.paragraph_format.space_after = Pt(0)
@@ -254,23 +316,18 @@ def build_docx() -> None:
                 set_cell_shading(cell, "E8EEF5")
 
     for heading, text in SECTIONS:
-        paragraph = document.add_paragraph()
-        paragraph.paragraph_format.space_before = Pt(7)
-        paragraph.paragraph_format.space_after = Pt(2)
-        run = paragraph.add_run(heading)
-        set_run_font(run, "Microsoft YaHei", 13, True)
-        run.font.color.rgb = RGBColor(0x1F, 0x4D, 0x78)
+        document.add_paragraph(heading, style="Heading 1")
 
         paragraph = document.add_paragraph()
         paragraph.paragraph_format.first_line_indent = Pt(20.4)
-        paragraph.paragraph_format.space_after = Pt(2)
+        paragraph.paragraph_format.space_after = Pt(3)
         paragraph.paragraph_format.line_spacing = 1.15
         run = paragraph.add_run(text)
         set_run_font(run, "Microsoft YaHei", 10.2)
 
     footer = section.footer.paragraphs[0]
     footer.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    run = footer.add_run("MoonDepSolve v0.2 · 2026-06-18")
+    run = footer.add_run("MoonDepSolve v0.3 | 2026-06-21")
     set_run_font(run, "Microsoft YaHei", 7.5)
     run.font.color.rgb = RGBColor(0x6B, 0x72, 0x80)
 
@@ -282,10 +339,60 @@ def build_docx() -> None:
     document.save(DOCX_PATH)
 
 
+def validate_docx() -> None:
+    document = Document(DOCX_PATH)
+    if len(document.sections) != 1:
+        raise RuntimeError("Proposal DOCX must contain exactly one section")
+
+    section = document.sections[0]
+    expected_dimensions = {
+        "page width": (section.page_width, Cm(21)),
+        "page height": (section.page_height, Cm(29.7)),
+        "left margin": (section.left_margin, Cm(1.25)),
+        "right margin": (section.right_margin, Cm(1.25)),
+        "top margin": (section.top_margin, Cm(1.05)),
+        "bottom margin": (section.bottom_margin, Cm(1.05)),
+    }
+    for label, (actual, expected) in expected_dimensions.items():
+        # Word stores section dimensions in twips, so round-trip values differ
+        # from exact centimetre conversions by up to half a twip.
+        if abs(actual - expected) > 4000:
+            raise RuntimeError(f"Unexpected DOCX {label}: {actual}")
+
+    properties = document.core_properties
+    if properties.title != TITLE or properties.subject != SUBTITLE:
+        raise RuntimeError("DOCX title metadata is out of date")
+    if properties.author != AUTHOR or properties.last_modified_by != AUTHOR:
+        raise RuntimeError("DOCX contributor metadata must be python123")
+
+    headings = [p for p in document.paragraphs if p.style.name == "Heading 1"]
+    if [p.text for p in headings] != [heading for heading, _ in SECTIONS]:
+        raise RuntimeError("DOCX Heading 1 structure does not match proposal sections")
+
+    if len(document.tables) != 1:
+        raise RuntimeError("Proposal DOCX must contain exactly one metadata table")
+    table = document.tables[0]
+    expected_widths = [950, 3750, 950, 4690]
+    grid_widths = [
+        int(column.get(qn("w:w"))) for column in table._tbl.tblGrid.gridCol_lst
+    ]
+    if grid_widths != expected_widths:
+        raise RuntimeError(f"Unexpected DOCX table grid: {grid_widths}")
+    for row in table.rows:
+        widths = [int(cell._tc.tcPr.tcW.get(qn("w:w"))) for cell in row.cells]
+        if widths != expected_widths:
+            raise RuntimeError(f"Unexpected DOCX cell widths: {widths}")
+
+    full_text = "\n".join(paragraph.text for paragraph in document.paragraphs)
+    if "MoonDepSolve v0.3" not in full_text or "MoonLogLens" in full_text:
+        raise RuntimeError("DOCX project identity is stale")
+
+
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     build_pdf()
     build_docx()
+    validate_docx()
     print(f"Generated one-page PDF: {PDF_PATH}")
     print(f"Generated DOCX: {DOCX_PATH}")
 

@@ -2,6 +2,28 @@
 
 本项目遵循语义化版本号，所有重要变更记录在此文件。
 
+## [0.3.0] - 2026-06-21
+
+### Added
+
+- 新增 `HighestCompatible` 与精确 `MinimalChange` 升级策略。
+- 新增 `UpgradeOptions`、`UpgradePlan`、`UpgradeChange`、`UpgradeError` 及稳定文本格式化 API。
+- 新增有界搜索上限；搜索未完成时返回 `SearchLimitExceeded`，不输出伪最优解。
+- 新增 `cmd/cli` 原生文件 CLI，支持 `resolve`、`plan`、lock、文本图和 Graphviz DOT。
+- 新增 registry/lock 示例、四组 expected 输出和 `scripts/demo-v0.3.sh` 回归脚本。
+- 新增升级规划与 CLI 参数测试，默认后端 27 项、native 后端 31 项测试通过。
+
+### Changed
+
+- 模块版本升级为 `0.3.0`，保持 v0.1/v0.2 公共 API 兼容。
+- CI 增加 native 构建、CLI 测试、expected 输出比对和完整历史身份门禁。
+- `.gitattributes` 固定文本 LF，避免 Windows/WSL 维护产生无意义换行差异。
+- pre-commit 同时检查唯一贡献者身份、格式、诊断和默认测试套件。
+
+### Dependencies
+
+- 新增 `moonbitlang/async@0.19.4`，仅用于原生 CLI 的异步文件访问；许可证为 Apache-2.0。
+
 ## [0.2.0] - 2026-06-18
 
 ### Added

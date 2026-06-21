@@ -1,4 +1,4 @@
-# OSC2026 提交说明
+# MoonDepSolve v0.3 OSC2026 提交说明
 
 ## 当前官方时间
 
@@ -22,5 +22,16 @@
 - 可编辑 DOCX：`docs/competition/MoonDepSolve项目申报书.docx`
 - Markdown 源稿：`docs/competition/proposal.md`
 - 终验清单：`docs/competition/acceptance-checklist.md`
+- 三分钟演示稿：`docs/competition/demo-script.md`
+- v0.3 发布说明：`docs/competition/release-notes-v0.3.md`
 
-提交前确认 PDF 恰好一页、两个远端 SHA 一致、贡献者仅 python123，并保留测试/CLI/Mooncakes dry-run 的终端证据。
+## 终验顺序
+
+1. 执行身份、接口、格式、默认/native 测试和 CLI expected 回归。
+2. 确认 PDF 恰好一页，DOCX/PDF 最新渲染无裁切、重叠或缺字。
+3. 保留 GitHub/GitLink Issue、PR/MR、CI 和 Release 的公开链接。
+4. 快进合并并推送两个 `master`，同步 annotated `v0.3.0` 标签。
+5. 从两个远端 fresh clone，复验唯一贡献者、测试和 demo。
+6. 由 `python123` 完成 Mooncakes GitHub 授权、dry-run 与最终发布。
+
+提交前确认两个远端 SHA 一致、贡献者仅 python123，并保留测试、CLI、Release 与 Mooncakes dry-run 的终端证据。
