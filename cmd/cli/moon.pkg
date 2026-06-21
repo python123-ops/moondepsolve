@@ -1,0 +1,17 @@
+import {
+  "python123/moondepsolve",
+  "moonbitlang/core/argparse",
+  "moonbitlang/core/builtin",
+  "moonbitlang/core/env",
+  "moonbitlang/core/string",
+  "moonbitlang/async",
+  "moonbitlang/async/fs",
+  "moonbitlang/async/io",
+  "moonbitlang/async/stdio",
+}
+
+supported_targets = "-all+native"
+
+options(
+  "is-main": true,
+)

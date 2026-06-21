@@ -1,0 +1,7 @@
+strategy: minimal-change
+changes: 0
+target lock:
+# MoonDepSolve lock
+app 1.0.0
+core 1.0.0
+logging 1.0.0

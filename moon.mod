@@ -28,3 +28,7 @@ keywords = [
 ]
 
 description = "A MoonBit semantic version, version range, and dependency resolution library for package ecosystem tooling."
+
+import {
+  "moonbitlang/async@0.19.4",
+}

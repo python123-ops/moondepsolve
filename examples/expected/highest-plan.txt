@@ -1,0 +1,9 @@
+strategy: highest-compatible
+changes: 2
+upgrade app 1.0.0 -> 1.1.0
+upgrade core 1.0.0 -> 1.2.0
+target lock:
+# MoonDepSolve lock
+app 1.1.0
+core 1.2.0
+logging 1.0.0
