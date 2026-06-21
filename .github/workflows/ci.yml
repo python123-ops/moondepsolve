@@ -1,11 +1,11 @@
-name: ci
+name: CI
 
 on:
   push:
   pull_request:
 
 jobs:
-  moonbit:
+  quality:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,8 +38,19 @@ jobs:
       - name: Check formatting
         run: moon fmt --check
 
-      - name: Run tests
-        run: moon test --enable-coverage
+      - name: Check diagnostics
+        run: moon check --warn-list '+73-35'
 
-      - name: Run CLI demo
-        run: moon run cmd/main
+      - name: Run library tests with coverage
+        run: moon test --enable-coverage --warn-list=-35
+
+      - name: Run in-memory demo
+        run: moon run cmd/main --warn-list=-35
+
+      - name: Build and test native CLI
+        run: |
+          moon check --target native --warn-list '+73-35'
+          moon test --target native --warn-list=-35
+
+      - name: Verify file-driven CLI outputs
+        run: sh scripts/demo-v0.3.sh

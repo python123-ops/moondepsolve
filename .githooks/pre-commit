@@ -3,4 +3,6 @@
 set -eu
 
 python scripts/check_contributor_identity.py
-moon check --warn-list +73
+moon fmt --check
+moon check --warn-list '+73-35'
+moon test --warn-list=-35

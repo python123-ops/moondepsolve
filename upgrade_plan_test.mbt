@@ -154,7 +154,10 @@ test "upgrade planning reports invalid and exhausted search limits" {
   let root = [upgrade_dep("core", "^1.0.0")]
   let current : @moondepsolve.Resolution = { packages: [] }
   let repo : @moondepsolve.Registry = {
-    packages: [upgrade_pkg("core", "1.0.0", [])],
+    packages: [
+      upgrade_pkg("core", "1.0.0", []),
+      upgrade_pkg("core", "1.1.0", []),
+    ],
   }
   match
     @moondepsolve.plan_upgrade(root, current, repo, {
@@ -220,5 +223,54 @@ test "minimal-change ties prefer higher versions independent of registry order" 
   assert_eq(
     @moondepsolve.format_version(first.resolution.packages[0].version),
     "1.2.0",
+  )
+}
+
+///|
+test "upgrade errors and highest-compatible plans have stable text" {
+  assert_eq(
+    @moondepsolve.format_upgrade_error(
+      DependencyFailure(PackageNotFound("ghost")),
+    ),
+    "upgrade planning failed: package not found: ghost",
+  )
+  assert_eq(
+    @moondepsolve.format_upgrade_error(InvalidSearchLimit(0)),
+    "invalid upgrade search limit: 0; expected a positive value",
+  )
+  assert_eq(
+    @moondepsolve.format_upgrade_error(SearchLimitExceeded(42)),
+    "upgrade search limit exceeded after 42 states",
+  )
+  let plan = upgrade_plan(
+    [upgrade_dep("core", "^1.0.0")],
+    { packages: [upgrade_pkg("core", "1.0.0", [])] },
+    [upgrade_pkg("core", "1.0.0", []), upgrade_pkg("core", "1.2.0", [])],
+    HighestCompatible,
+    100000,
+  )
+  assert_eq(
+    @moondepsolve.format_upgrade_plan(plan),
+    "strategy: highest-compatible\nchanges: 1\nupgrade core 1.0.0 -> 1.2.0\n",
+  )
+}
+
+///|
+test "multiple requirements for one root package are all enforced" {
+  let plan = upgrade_plan(
+    [upgrade_dep("core", ">=1.0.0"), upgrade_dep("core", "<2.0.0")],
+    { packages: [] },
+    [
+      upgrade_pkg("core", "1.0.0", []),
+      upgrade_pkg("core", "1.5.0", []),
+      upgrade_pkg("core", "2.0.0", []),
+    ],
+    MinimalChange,
+    100000,
+  )
+  assert_eq(plan.resolution.packages.length(), 1)
+  assert_eq(
+    @moondepsolve.format_version(plan.resolution.packages[0].version),
+    "1.5.0",
   )
 }
