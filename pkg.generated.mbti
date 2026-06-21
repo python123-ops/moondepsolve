@@ -8,6 +8,8 @@ pub fn build_dependency_graph(Array[Dependency], Resolution) -> DependencyGraph
 
 pub fn compare_version(Version, Version) -> Int
 
+pub fn default_upgrade_options(UpgradeStrategy) -> UpgradeOptions
+
 pub fn format_conflict_report(ConflictReport) -> String
 
 pub fn format_error(DepError) -> String
@@ -17,6 +19,10 @@ pub fn format_graph_dot(DependencyGraph) -> String
 pub fn format_graph_text(DependencyGraph) -> String
 
 pub fn format_lock(Resolution) -> String
+
+pub fn format_upgrade_error(UpgradeError) -> String
+
+pub fn format_upgrade_plan(UpgradePlan) -> String
 
 pub fn format_version(Version) -> String
 
@@ -29,6 +35,8 @@ pub fn parse_registry(String) -> Result[Registry, DepError]
 pub fn parse_req(String) -> Result[VersionReq, DepError]
 
 pub fn parse_version(String) -> Result[Version, DepError]
+
+pub fn plan_upgrade(Array[Dependency], Resolution, Registry, UpgradeOptions) -> Result[UpgradePlan, UpgradeError]
 
 pub fn resolve(Array[Dependency], Registry) -> Result[Resolution, DepError]
 
@@ -105,6 +113,42 @@ pub(all) struct Registry {
 
 pub(all) struct Resolution {
   packages : Array[PackageVersion]
+} derive(Eq)
+
+pub(all) struct UpgradeChange {
+  kind : UpgradeChangeKind
+  package_name : String
+  from_version : Version?
+  to_version : Version?
+} derive(Eq)
+
+pub(all) enum UpgradeChangeKind {
+  Add
+  Remove
+  Upgrade
+  Downgrade
+} derive(Eq)
+
+pub(all) enum UpgradeError {
+  DependencyFailure(DepError)
+  InvalidSearchLimit(Int)
+  SearchLimitExceeded(Int)
+} derive(Eq)
+
+pub(all) struct UpgradeOptions {
+  strategy : UpgradeStrategy
+  max_states : Int
+} derive(Eq)
+
+pub(all) struct UpgradePlan {
+  strategy : UpgradeStrategy
+  resolution : Resolution
+  changes : Array[UpgradeChange]
+} derive(Eq)
+
+pub(all) enum UpgradeStrategy {
+  HighestCompatible
+  MinimalChange
 } derive(Eq)
 
 pub(all) struct Version {
