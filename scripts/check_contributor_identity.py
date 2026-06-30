@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
+import argparse
 from pathlib import Path
 
 
@@ -39,9 +40,15 @@ def pending_identity(kind: str) -> str:
     return raw.rsplit(" ", 2)[0]
 
 
-def history_violations() -> list[str]:
+def history_ref_args(refs: list[str] | None) -> list[str]:
+    if refs:
+        return refs
+    return ["--all"]
+
+
+def history_violations(refs: list[str] | None) -> list[str]:
     fields = "%H%x00%an%x00%ae%x00%cn%x00%ce"
-    rows = git("log", "--all", f"--format={fields}")
+    rows = git("log", *history_ref_args(refs), f"--format={fields}")
     violations: list[str] = []
     for row in rows.splitlines():
         parts = row.split("\0")
@@ -58,7 +65,21 @@ def history_violations() -> list[str]:
     return violations
 
 
-def main() -> int:
+def parse_args(argv: list[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Reject Git identities and reachable commits that are not python123."
+    )
+    parser.add_argument(
+        "--ref",
+        action="append",
+        dest="refs",
+        help="Git revision/ref to inspect. Repeatable. Defaults to --all.",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(sys.argv[1:] if argv is None else argv)
     try:
         root = Path(git("rev-parse", "--show-toplevel"))
         checks = {
@@ -71,7 +92,7 @@ def main() -> int:
             for label, actual in checks.items()
             if actual != EXPECTED_IDENTITY
         ]
-        violations.extend(history_violations())
+        violations.extend(history_violations(args.refs))
     except RuntimeError as error:
         print(f"Contributor identity check failed: {error}", file=sys.stderr)
         return 2
@@ -86,10 +107,11 @@ def main() -> int:
             print(f"  - {violation}", file=sys.stderr)
         return 1
 
-    commit_count = git("rev-list", "--all", "--count")
+    commit_count = git("rev-list", *history_ref_args(args.refs), "--count")
+    scope = ", ".join(history_ref_args(args.refs))
     print(
         f"Contributor identity verified: {EXPECTED_IDENTITY} "
-        f"across {commit_count} reachable commits."
+        f"across {commit_count} reachable commits ({scope})."
     )
     return 0
 

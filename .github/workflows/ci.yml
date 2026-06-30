@@ -13,6 +13,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Configure contributor identity
         run: |
@@ -20,7 +21,7 @@ jobs:
           git config user.email python123@users.noreply.gitlink.org.cn
 
       - name: Verify contributor identity
-        run: python scripts/check_contributor_identity.py
+        run: python scripts/check_contributor_identity.py --ref HEAD
 
       - name: Install MoonBit
         run: |
