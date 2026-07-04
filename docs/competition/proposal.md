@@ -1,32 +1,37 @@
-# MoonDepSolve v0.3 项目申报书
+# MoonDepSolve v0.3 Project Proposal
 
-**参赛作者：** python123
+**Author:** python123
 
-**方向：** MoonBit 工程基础设施与包生态
+**Direction:** MoonBit engineering infrastructure and package ecosystem
 
-**许可证：** Apache-2.0
-**仓库：** [GitLink 主仓库](https://gitlink.org.cn/python123/moondepsolve) · [GitHub 镜像](https://github.com/python123-ops/moondepsolve)
+**License:** Apache-2.0
 
-## 项目定位
+**Repositories:** [GitLink](https://gitlink.org.cn/python123/moondepsolve) · [GitHub](https://github.com/python123-ops/moondepsolve)
 
-MoonDepSolve 是面向 MoonBit 包生态的语义版本、依赖求解与升级规划基础库。项目覆盖版本约束解析、传递依赖选择、稳定 lock、依赖图、冲突解释和升级方案生成，可复用于包管理器、构建工具、依赖审计与自动化发布流程。
+## Project Positioning
 
-## v0.3 核心成果
+MoonDepSolve is a semantic-version and dependency-resolution foundation for MoonBit package tooling. It covers version requirement parsing, transitive dependency selection, stable lock output, dependency graphs, conflict reports, and upgrade-plan generation.
 
-- 保持 v0.1/v0.2 的解析、匹配、求解、lock、依赖图和冲突报告 API 兼容。
-- 新增 `HighestCompatible` 与精确 `MinimalChange`：先最小化变更包数量，同成本时稳定偏好更高版本；有界搜索超过上限时明确报错。
-- 新增结构化 `UpgradePlan`，稳定区分 add、remove、upgrade、downgrade，并返回目标 Resolution。
-- 新增原生文件 CLI：从 registry/lock 执行 `resolve` 和 `plan`，输出 lock、文本图或 Graphviz DOT。
-- 提供四组 expected 输出与一键演示脚本，真实覆盖文件读取、解析、求解、图导出和升级规划链路。
+The project is designed for package managers, build tools, dependency audits, and release automation. Its scope is deliberately narrow: solve and explain dependency state, then provide stable text formats that other tools can consume.
 
-## 技术路线与 MoonBit 价值
+## v0.3 Delivery
 
-项目采用“版本解析 -> 约束匹配 -> 候选稳定排序 -> 递归求解/有界精确搜索 -> lock/图/诊断输出”的边界。核心算法与公共模型使用 MoonBit 编写，`.mbti` 由 `moon info` 生成审阅；native CLI 使用官方 `moonbitlang/async/fs`。项目为 MoonBit 工具链补充可复用、可解释、可测试的依赖基础能力，也展示了 MoonBit 库 API 与原生文件工具的完整工程路径。
+- Keeps the v0.1/v0.2 parsing, matching, resolution, lock, graph, and conflict-report APIs compatible.
+- Adds `HighestCompatible` and exact `MinimalChange` planning.
+- Adds structured `UpgradePlan` output for add, remove, upgrade, and downgrade changes.
+- Adds a native file CLI that reads registry/lock files and emits lock, text graph, or Graphviz DOT output.
+- Provides expected-output regression checks over real registry and lock files.
 
-## 工程质量与公开维护
+## Technical Route
 
-2026-06-21 基线为默认后端 27 项、native 后端 31 项测试通过，另有 4 组 CLI expected 输出回归。CI 使用完整历史，先检查所有 author/committer 均为 `python123 <python123@users.noreply.gitlink.org.cn>`，再检查接口、格式、诊断、覆盖率、native CLI 与演示。仓库提供 Apache-2.0、README、Changelog、贡献/安全规范、Issue/PR 模板、发布清单和第三方许可证记录。
+The implementation follows a simple pipeline: version parsing, requirement matching, stable candidate ordering, recursive resolution or bounded exact search, then lock, graph, or diagnostic output.
 
-## 赛事进度与交付
+Core APIs are written in MoonBit and reviewed through generated `.mbti` files. The native CLI uses `moonbitlang/async/fs` for file workflows. This gives the MoonBit ecosystem a reusable dependency component and a working example of library API plus native tool packaging.
 
-官方开发期为 **2026-04-29 至 2026-07-12**，验收期为 **2026-07-13 至 2026-07-17**。4 月 29 日后完成 v0.1 求解基础、v0.2 图与冲突解释、v0.3 精确升级规划和文件 CLI，并持续补充测试、CI、身份门禁和材料。终验交付包括双仓库一致历史、v0.3.0 标签/Release、fresh clone 复验及 Mooncakes dry-run；实际发布由 `python123` 通过 GitHub 授权后执行。
+## Quality Evidence
+
+The closeout baseline includes default-backend tests, native tests in CI, file CLI regressions, contributor-identity gates, interface drift checks, formatting checks, diagnostics, license files, third-party notices, issue templates, release notes, and a one-page proposal artifact.
+
+## Competition Status
+
+Development started after 2026-04-29 and reached v0.3 with exact upgrade planning and file-based CLI support. The final repository closeout keeps GitHub and GitLink synchronized, keeps the `v0.3.0` tag available on both remotes, and records release notes on both platforms. Mooncakes publication is deferred outside this repository closeout.

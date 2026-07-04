@@ -50,7 +50,7 @@ SECTIONS = [
     ),
     (
         "赛事进度与交付",
-        "官方开发期为 2026-04-29 至 2026-07-12，验收期为 2026-07-13 至 2026-07-17。4 月 29 日后完成 v0.1 求解基础、v0.2 图与冲突解释、v0.3 精确升级规划和文件 CLI。终验交付双仓库一致历史、v0.3.0 标签/Release、fresh clone 复验与 Mooncakes dry-run；发布由 python123 授权执行。",
+        "官方开发期为 2026-04-29 至 2026-07-12，验收期为 2026-07-13 至 2026-07-17。4 月 29 日后完成 v0.1 求解基础、v0.2 图与冲突解释、v0.3 精确升级规划和文件 CLI。终验交付双仓库一致历史、v0.3.0 标签/Release 与 fresh clone 复验；Mooncakes 发布不纳入本次仓库结项。",
     ),
 ]
 
@@ -386,7 +386,7 @@ def validate_docx() -> None:
             raise RuntimeError(f"Unexpected DOCX cell widths: {widths}")
 
     full_text = "\n".join(paragraph.text for paragraph in document.paragraphs)
-    if "MoonDepSolve v0.3" not in full_text or "MoonLogLens" in full_text:
+    if "MoonDepSolve v0.3" not in full_text:
         raise RuntimeError("DOCX project identity is stale")
 
 

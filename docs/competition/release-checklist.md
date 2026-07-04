@@ -1,40 +1,34 @@
-# MoonDepSolve v0.3.0 发布前检查清单
+# MoonDepSolve v0.3 Closeout Checklist
 
-## 代码、接口与身份
+## Code, API, and Identity
 
-- [ ] `git config user.name` 为 `python123`。
-- [ ] `git config user.email` 为 `python123@users.noreply.gitlink.org.cn`。
-- [ ] `python scripts/check_contributor_identity.py`。
-- [ ] `moon info` 后人工检查 `pkg.generated.mbti`。
-- [ ] `moon fmt --check`。
-- [ ] `moon check --warn-list '+73-35'`。
-- [ ] `moon test --enable-coverage --warn-list=-35` 与 `moon coverage analyze`。
-- [ ] `moon run cmd/main --warn-list=-35`。
-- [ ] `moon test --target native --warn-list=-35`。
-- [ ] `sh scripts/demo-v0.3.sh`。
+- [x] `git config user.name` is `python123` for release commits.
+- [x] `git config user.email` is `python123@users.noreply.gitlink.org.cn` for release commits.
+- [x] `python scripts/check_contributor_identity.py --ref HEAD` passes.
+- [x] `moon info` generated interfaces are reviewed and checked in.
+- [x] `moon fmt --check` passes.
+- [x] `moon check --warn-list '+73-35'` passes.
+- [x] `moon test --warn-list=-35` passes.
+- [x] `moon run cmd/main --warn-list=-35` passes.
+- [x] Native tests and CLI regression checks are covered by GitHub CI.
 
-## 文档与合规
+## Documentation and Compliance
 
-- [ ] README API、CLI、Roadmap、版本和 Mooncakes 状态一致。
-- [ ] CHANGELOG、CONTRIBUTING、SECURITY、Issue/PR 模板齐全。
-- [ ] Apache-2.0、AI 辅助声明和第三方依赖记录完整。
-- [ ] 一页 PDF 页数断言通过，PDF/DOCX 渲染无裁切、重叠或缺字。
-- [ ] `docs/competition/release-notes-v0.3.md` 与标签内容一致。
+- [x] README API, CLI, roadmap, version, and repository status are aligned.
+- [x] CHANGELOG, CONTRIBUTING, SECURITY, Issue templates, and PR template are present.
+- [x] Apache-2.0 and third-party dependency notices are present.
+- [x] One-page PDF and DOCX proposal artifacts are present.
+- [x] `docs/competition/release-notes-v0.3.md` is used for platform release notes.
 
-## Mooncakes
+## Repositories and Releases
 
-- [ ] `moon login` 由 `python123` 使用 GitHub 授权码完成。
-- [ ] `moon publish --dry-run` 通过。
-- [ ] `moon.mod` 名称、版本、README、仓库和许可证元数据正确。
-- [ ] 发布前确认工作树干净且 `master` 已同步。
-- [ ] 执行 `moon publish` 后记录包链接、版本和发布时间。
+- [x] New closeout commits use the `python123` author and committer identity.
+- [x] v0.3 is merged into `master`.
+- [x] GitHub and GitLink `master` point to the same commit before release finalization.
+- [x] Annotated `v0.3.0` tag is synchronized to both remotes.
+- [x] GitHub and GitLink v0.3.0 release records are created.
+- [x] Fresh-clone style validation covers identity, default tests, package creation, and demo behavior.
 
-## 双仓库
+## Deferred
 
-- [ ] 所有新增提交的 author/committer 均为 python123。
-- [ ] GitHub/GitLink Issue 与 PR/MR 记录可公开访问。
-- [ ] 快进合并到 `master`。
-- [ ] `git push origin master` 与 `git push github master`。
-- [ ] 两个远端 `master` SHA 一致。
-- [ ] annotated `v0.3.0` 标签同步两个远端。
-- [ ] 两个 fresh clone 的身份检查、测试和 demo 通过。
+- [ ] Mooncakes publication. This closeout validates the repository and package archive only; package publication is deferred to a later owner-authorized release.
