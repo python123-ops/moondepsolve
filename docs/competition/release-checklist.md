@@ -29,6 +29,6 @@
 - [x] GitHub and GitLink v0.3.0 release records are created.
 - [x] Fresh-clone style validation covers identity, default tests, package creation, and demo behavior.
 
-## Deferred
+## Mooncakes Publication
 
-- [ ] Mooncakes publication. This closeout validates the repository and package archive only; package publication is deferred to a later owner-authorized release.
+- [x] Mooncakes publication completed for `python123/moondepsolve` version `0.3.0`; `moon publish --dry-run` and `moon publish` both passed server-side validation.

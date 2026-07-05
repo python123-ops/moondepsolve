@@ -116,7 +116,7 @@ Exact signatures are tracked in [`pkg.generated.mbti`](pkg.generated.mbti).
 - The OSC2026 materials are in [`docs/competition`](docs/competition), including the one-page proposal PDF, demo script, release notes, and acceptance checklist.
 - License and dependency notices are in [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-Mooncakes publication is not part of this repository closeout pass. The package archive is locally validated with `moon package`; a future publication can use the same module name, `python123/moondepsolve`.
+Mooncakes package: `python123/moondepsolve` version `0.3.0`. The release was validated with `moon package`, `moon publish --dry-run`, and `moon publish`.
 
 ## License
 
