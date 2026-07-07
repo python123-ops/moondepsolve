@@ -64,7 +64,7 @@ pub(all) enum ConflictKind {
 
 pub(all) struct ConflictReport {
   kind : ConflictKind
-  package : String
+  package_name : String
   requirement : String?
   selected_version : String?
   dependency_path : String?

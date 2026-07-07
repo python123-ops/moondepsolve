@@ -44,9 +44,10 @@ Show CI and terminal evidence:
 
 ```bash
 python scripts/check_contributor_identity.py --ref HEAD
-moon test --warn-list=-35
-moon run cmd/main --warn-list=-35
+moon check --deny-warn
+moon test --deny-warn
+moon run cmd/main --deny-warn
 moon package
 ```
 
-Close with the Apache-2.0 license, third-party notices, changelog, one-page proposal, v0.3.0 tag, release records, and matching GitHub/GitLink `master` commits.
+Close with the Apache-2.0 license, third-party notices, changelog, one-page proposal, v0.3.1 strict-CI release, release records, and matching GitHub/GitLink `master` commits.

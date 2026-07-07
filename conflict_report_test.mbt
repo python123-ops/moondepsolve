@@ -25,7 +25,7 @@ test "build reports for missing and unmatched packages" {
   assert_true(
     missing is Some(report) &&
     report.kind is MissingPackage &&
-    report.package == "ghost" &&
+    report.package_name == "ghost" &&
     report.available_versions.length() == 0,
   )
   guard missing is Some(missing_report) else {

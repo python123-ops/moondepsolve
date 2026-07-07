@@ -4,7 +4,7 @@ Official development window: 2026-04-29 to 2026-07-12. Acceptance window: 2026-0
 
 ## Functionality
 
-- [x] v0.1/v0.2 public APIs remain compatible.
+- [x] v0.1/v0.2 entry functions remain available; `ConflictReport.package_name` replaces the reserved `package` field for strict warning-free validation.
 - [x] Semantic version parsing, requirement matching, transitive resolution, and highest-compatible selection are implemented.
 - [x] Text registry parsing, stable lock output, and lock readback are implemented.
 - [x] Dependency graph, text graph, DOT graph, and conflict report output are implemented.
@@ -16,10 +16,10 @@ Official development window: 2026-04-29 to 2026-07-12. Acceptance window: 2026-0
 ## Engineering Quality
 
 - [x] `moon info` generated `.mbti` files are checked into the repository.
-- [x] `moon fmt --check` and `moon check --warn-list '+73-35'` pass.
+- [x] `moon fmt --check`, `moon check --deny-warn`, and `moon test --deny-warn` pass.
 - [x] Default backend tests pass; native backend tests pass in GitHub CI.
 - [x] CI uses full Git history and verifies contributor identity before MoonBit checks.
-- [x] CI covers interface drift, formatting, diagnostics, default tests, native tests, and file CLI regressions.
+- [x] CI covers interface drift, formatting, strict diagnostics, default tests, native tests, and file CLI regressions.
 - [x] `.gitattributes` keeps text line endings stable and treats binary artifacts as binary.
 
 ## Documentation and Compliance
@@ -35,11 +35,11 @@ Official development window: 2026-04-29 to 2026-07-12. Acceptance window: 2026-0
 - [x] Reachable commits are authored and committed as `python123 <python123@users.noreply.gitlink.org.cn>`.
 - [x] v0.3 work is merged into `master`.
 - [x] GitHub and GitLink `master` point to the same commit.
-- [x] `v0.3.0` annotated tag is present on both remotes.
+- [x] `v0.3.0` annotated tag is present on both remotes; `v0.3.1` records the OSC2026 strict-CI fix.
 - [x] Fresh-clone style verification has been rerun for identity, default tests, package creation, and demo output where the local environment permits it.
-- [x] GitHub and GitLink v0.3.0 release records are created or updated during closeout.
+- [x] GitHub and GitLink release records are created or updated during closeout.
 
 ## Publication
 
 - [x] `moon package` validates the package archive locally.
-- [x] Mooncakes package `python123/moondepsolve` version `0.3.0` published successfully after `moon publish --dry-run`.
+- [x] Mooncakes package `python123/moondepsolve` version `0.3.0` is published; `0.3.1` package validation passes and publication is pending module-owner login as `python123`.

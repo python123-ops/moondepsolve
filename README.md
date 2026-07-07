@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/python123-ops/moondepsolve/actions/workflows/ci.yml/badge.svg)](https://github.com/python123-ops/moondepsolve/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Release](https://img.shields.io/badge/release-v0.3.0-brightgreen.svg)](CHANGELOG.md)
+[![Release](https://img.shields.io/badge/release-v0.3.1-brightgreen.svg)](CHANGELOG.md)
 
 MoonDepSolve is a MoonBit library and native CLI for semantic versions, deterministic dependency resolution, lock output, dependency graphs, conflict reports, and exact upgrade planning.
 
@@ -33,20 +33,20 @@ Default backend:
 python scripts/check_contributor_identity.py --ref HEAD
 moon info
 moon fmt --check
-moon check --warn-list '+73-35'
-moon test --warn-list=-35
-moon run cmd/main --warn-list=-35
+moon check --deny-warn
+moon test --deny-warn
+moon run cmd/main --deny-warn
 ```
 
 Native CLI path, on a machine with a C compiler:
 
 ```bash
-moon check --target native --warn-list '+73-35'
-moon test --target native --warn-list=-35
+moon check --target native --deny-warn
+moon test --target native --deny-warn
 sh scripts/demo-v0.3.sh
 ```
 
-`ConflictReport.package` is kept for v0.2 compatibility. Current MoonBit toolchains warn that `package` may become reserved, so project gates suppress warning 35 only for that compatibility field.
+`ConflictReport.package_name` replaces the earlier `package` field so OSC2026 quality gates can run with `--deny-warn` and no reserved-keyword suppression. Formatted reports still print `package: ...` for stable CLI output.
 
 ## File CLI
 
@@ -116,7 +116,7 @@ Exact signatures are tracked in [`pkg.generated.mbti`](pkg.generated.mbti).
 - The OSC2026 materials are in [`docs/competition`](docs/competition), including the one-page proposal PDF, demo script, release notes, and acceptance checklist.
 - License and dependency notices are in [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-Mooncakes package: `python123/moondepsolve` version `0.3.0`. The release was validated with `moon package`, `moon publish --dry-run`, and `moon publish`.
+Mooncakes package: `python123/moondepsolve` version `0.3.0` is published. Version `0.3.1` packages and validates locally; final Mooncakes publication requires logging in as the module owner `python123`.
 
 ## License
 

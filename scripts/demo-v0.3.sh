@@ -5,19 +5,19 @@ moon_bin="${MOON:-moon}"
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
 
-"$moon_bin" run cmd/cli --target native --warn-list=-35 -- \
+"$moon_bin" run cmd/cli --target native --deny-warn -- \
   resolve \
   --registry examples/registry.txt \
   --root 'app:^1.0.0' \
   --format lock > "$tmp_dir/resolve.lock"
 
-"$moon_bin" run cmd/cli --target native --warn-list=-35 -- \
+"$moon_bin" run cmd/cli --target native --deny-warn -- \
   resolve \
   --registry examples/registry.txt \
   --root 'app:^1.0.0' \
   --format dot > "$tmp_dir/dependency-graph.dot"
 
-"$moon_bin" run cmd/cli --target native --warn-list=-35 -- \
+"$moon_bin" run cmd/cli --target native --deny-warn -- \
   plan \
   --registry examples/registry.txt \
   --lock examples/current.lock \
@@ -25,7 +25,7 @@ trap 'rm -rf "$tmp_dir"' EXIT
   --strategy minimal \
   --max-states 100000 > "$tmp_dir/minimal-plan.txt"
 
-"$moon_bin" run cmd/cli --target native --warn-list=-35 -- \
+"$moon_bin" run cmd/cli --target native --deny-warn -- \
   plan \
   --registry examples/registry.txt \
   --lock examples/current.lock \

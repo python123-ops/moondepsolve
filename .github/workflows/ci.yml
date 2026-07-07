@@ -32,7 +32,7 @@ jobs:
         run: moon update
 
       - name: Show MoonBit version
-        run: moon version
+        run: moon version --all
 
       - name: Update interfaces
         run: |
@@ -43,18 +43,18 @@ jobs:
         run: moon fmt --check
 
       - name: Check diagnostics
-        run: moon check --warn-list '+73-35'
+        run: moon check --deny-warn
 
       - name: Run library tests with coverage
-        run: moon test --enable-coverage --warn-list=-35
+        run: moon test --deny-warn --enable-coverage
 
       - name: Run in-memory demo
-        run: moon run cmd/main --warn-list=-35
+        run: moon run cmd/main --deny-warn
 
       - name: Build and test native CLI
         run: |
-          moon check --target native --warn-list '+73-35'
-          moon test --target native --warn-list=-35
+          moon check --target native --deny-warn
+          moon test --target native --deny-warn
 
       - name: Verify file-driven CLI outputs
         run: sh scripts/demo-v0.3.sh

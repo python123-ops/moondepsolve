@@ -6,10 +6,9 @@ pub(all) enum ConflictKind {
 } derive(Eq)
 
 ///|
-#warnings("-35")
 pub(all) struct ConflictReport {
   kind : ConflictKind
-  package : String
+  package_name : String
   requirement : String?
   selected_version : String?
   dependency_path : String?
@@ -17,7 +16,6 @@ pub(all) struct ConflictReport {
 } derive(Eq)
 
 ///|
-#warnings("-35")
 pub fn build_conflict_report(
   error : DepError,
   registry : Registry,
@@ -26,7 +24,7 @@ pub fn build_conflict_report(
     PackageNotFound(name) =>
       Some({
         kind: MissingPackage,
-        package: name,
+        package_name: name,
         requirement: None,
         selected_version: None,
         dependency_path: None,
@@ -35,7 +33,7 @@ pub fn build_conflict_report(
     NoMatchingVersion(name, requirement) =>
       Some({
         kind: NoMatchingVersion,
-        package: name,
+        package_name: name,
         requirement: Some(requirement),
         selected_version: None,
         dependency_path: None,
@@ -44,7 +42,7 @@ pub fn build_conflict_report(
     VersionConflict(name, selected, requirement, path) =>
       Some({
         kind: SelectedVersionConflict,
-        package: name,
+        package_name: name,
         requirement: Some(requirement),
         selected_version: Some(selected),
         dependency_path: Some(path),
@@ -60,7 +58,7 @@ pub fn format_conflict_report(report : ConflictReport) -> String {
   builder.write_string("conflict: ")
   builder.write_string(conflict_kind_text(report.kind))
   builder.write_string("\npackage: ")
-  builder.write_string(report.package)
+  builder.write_string(report.package_name)
   builder.write_string("\n")
   match report.requirement {
     Some(value) => builder.write_string("requirement: \{value}\n")

@@ -21,6 +21,6 @@
 
 1. Verify contributor identity, public interfaces, formatting, diagnostics, default tests, package creation, and demo output.
 2. Confirm GitHub and GitLink `master` point to the same commit.
-3. Confirm `v0.3.0` tag is present on both remotes.
+3. Confirm `v0.3.0` remains present on both remotes and `v0.3.1` records the OSC2026 strict-CI fix.
 4. Create GitHub and GitLink release records using `docs/competition/release-notes-v0.3.md`.
-5. Confirm Mooncakes package `python123/moondepsolve` version `0.3.0` is published and the package archive still passes `moon package`.
+5. Confirm Mooncakes package `python123/moondepsolve` version `0.3.0` is published, then publish `0.3.1` after logging in as module owner `python123`.

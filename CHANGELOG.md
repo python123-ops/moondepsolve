@@ -2,6 +2,14 @@
 
 本项目遵循语义化版本号，所有重要变更记录在此文件。
 
+## [0.3.1] - 2026-07-08
+
+### Changed
+
+- Renamed `ConflictReport.package` to `ConflictReport.package_name` to remove the MoonBit reserved-keyword warning raised by strict OSC2026 quality gates.
+- Kept formatted conflict-report text stable: CLI and report output still use the label `package: ...`.
+- Updated CI and local verification docs to run `moon check --deny-warn`, `moon test --deny-warn`, and native backend checks without warning 35 suppression.
+
 ## [0.3.0] - 2026-06-21
 
 ### Added
