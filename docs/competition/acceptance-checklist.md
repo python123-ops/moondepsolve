@@ -42,4 +42,4 @@ Official development window: 2026-04-29 to 2026-07-12. Acceptance window: 2026-0
 ## Publication
 
 - [x] `moon package` validates the package archive locally.
-- [x] Mooncakes package `python123/moondepsolve` version `0.3.0` is published; `0.3.1` package validation passes and publication is pending module-owner login as `python123`.
+- [x] Mooncakes package `python123/moondepsolve` version `0.3.1` published successfully after `moon publish --dry-run`.

@@ -34,4 +34,4 @@ The closeout baseline includes default-backend tests, native tests in CI, file C
 
 ## Competition Status
 
-Development started after 2026-04-29 and reached v0.3 with exact upgrade planning and file-based CLI support. The final repository closeout keeps GitHub and GitLink synchronized, keeps the `v0.3.0` tag available on both remotes, records the `v0.3.1` strict-CI fix, and keeps Mooncakes package `python123/moondepsolve` published at version `0.3.0` while the `0.3.1` package awaits module-owner publication.
+Development started after 2026-04-29 and reached v0.3 with exact upgrade planning and file-based CLI support. The final repository closeout keeps GitHub and GitLink synchronized, keeps the `v0.3.0` tag available on both remotes, records the `v0.3.1` strict-CI fix, and publishes Mooncakes package `python123/moondepsolve` version `0.3.1`.

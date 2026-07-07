@@ -31,4 +31,4 @@
 
 ## Mooncakes Publication
 
-- [x] Mooncakes publication completed for `python123/moondepsolve` version `0.3.0`; `0.3.1` package validation passes and publication is pending module-owner login as `python123`.
+- [x] Mooncakes publication completed for `python123/moondepsolve` version `0.3.1`; `moon publish --dry-run` and `moon publish` both passed server-side validation.
