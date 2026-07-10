@@ -1,11 +1,6 @@
 name: Product Site
 
 on:
-  push:
-    branches: [master]
-    paths:
-      - "site/**"
-      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
