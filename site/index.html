@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="MoonDepSolve is a MoonBit dependency-resolution foundation for semantic versions, lock output, conflict reports, and exact upgrade planning."
+    />
+    <title>MoonDepSolve | MoonBit Dependency Resolution</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23172033'/%3E%3Cpath d='M17 44V20h8l7 13 7-13h8v24h-7V31l-6 11h-4l-6-11v13z' fill='white'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="MoonDepSolve home">
+        <span class="brand-mark">M</span>
+        <span>MoonDepSolve</span>
+      </a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="#capabilities">Capabilities</a>
+        <a href="#demo">Demo</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#api">API</a>
+      </nav>
+      <a class="nav-action" href="https://github.com/python123-ops/moondepsolve">GitHub</a>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">MoonBit package ecosystem tooling</p>
+          <h1 id="hero-title">Dependency solving that reviewers can run, inspect, and trust.</h1>
+          <p class="hero-lede">
+            MoonDepSolve provides semantic-version parsing, deterministic dependency resolution, stable lock output,
+            dependency graphs, conflict reports, and exact upgrade planning for MoonBit tools.
+          </p>
+          <div class="hero-actions" aria-label="Project links">
+            <a class="button primary" href="https://mooncakes.io/docs/python123/moondepsolve@0.3.1">Mooncakes 0.3.1</a>
+            <a class="button" href="https://gitlink.org.cn/python123/moondepsolve">GitLink</a>
+            <a class="button" href="https://github.com/python123-ops/moondepsolve/actions/workflows/ci.yml">CI</a>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="MoonDepSolve resolver overview">
+          <div class="terminal-window">
+            <div class="terminal-title">
+              <span>strict verification</span>
+              <span class="status-dot"></span>
+            </div>
+            <pre><code>$ moon check --deny-warn
+Finished. moon: ran 5 tasks
+
+$ moon test --deny-warn
+Total tests: 27, passed: 27
+
+$ moon publish
+Server status: 200 OK</code></pre>
+          </div>
+          <img
+            class="hero-graph"
+            src="./assets/dependency-flow.svg"
+            alt="Dependency resolution flow from registry and roots to lock output, graph output, and conflict reports"
+          />
+        </div>
+      </section>
+
+      <section class="proof-strip" aria-label="Delivery evidence">
+        <div>
+          <strong>v0.3.1</strong>
+          <span>published on Mooncakes</span>
+        </div>
+        <div>
+          <strong>deny-warn</strong>
+          <span>strict compiler gates</span>
+        </div>
+        <div>
+          <strong>GitLink + GitHub</strong>
+          <span>same master commit</span>
+        </div>
+        <div>
+          <strong>Apache-2.0</strong>
+          <span>open-source release</span>
+        </div>
+      </section>
+
+      <section class="section" id="why" aria-labelledby="why-title">
+        <div class="section-heading">
+          <p class="eyebrow">Why it exists</p>
+          <h2 id="why-title">A small dependency core for MoonBit package tools.</h2>
+        </div>
+        <div class="why-grid">
+          <article>
+            <h3>Stable decisions</h3>
+            <p>Version candidates are ordered deterministically, so the same registry and roots produce the same result.</p>
+          </article>
+          <article>
+            <h3>Explainable failures</h3>
+            <p>Conflict reports keep the package name, requirement, selected version, dependency path, and candidates visible.</p>
+          </article>
+          <article>
+            <h3>Reusable boundary</h3>
+            <p>The library keeps solving, lock output, graphs, and upgrade planning separate from any one package manager UI.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="capabilities" aria-labelledby="capabilities-title">
+        <div class="section-heading">
+          <p class="eyebrow">Capabilities</p>
+          <h2 id="capabilities-title">From version text to a reviewable dependency state.</h2>
+        </div>
+        <div class="capability-layout">
+          <div class="capability-tabs" role="tablist" aria-label="Capability details">
+            <button class="tab is-active" type="button" data-tab="resolve" role="tab" aria-selected="true">Resolve</button>
+            <button class="tab" type="button" data-tab="explain" role="tab" aria-selected="false">Explain</button>
+            <button class="tab" type="button" data-tab="upgrade" role="tab" aria-selected="false">Upgrade</button>
+          </div>
+          <div class="capability-panel" id="capability-panel">
+            <h3>Deterministic transitive resolution</h3>
+            <p>
+              Parse registry rows, match version requirements, select compatible package versions, and write stable lock
+              output for downstream tools.
+            </p>
+            <ul>
+              <li>Semantic version and requirement parsing</li>
+              <li>Stable lock format with readback</li>
+              <li>Text graph and Graphviz DOT output</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section demo-section" id="demo" aria-labelledby="demo-title">
+        <div class="section-heading">
+          <p class="eyebrow">CLI demo</p>
+          <h2 id="demo-title">Real commands, fixed expected output.</h2>
+        </div>
+        <div class="demo-grid">
+          <article class="command-block">
+            <div class="block-title">
+              <h3>Resolve a registry</h3>
+              <button class="copy-button" type="button" data-copy="resolve-command">Copy</button>
+            </div>
+            <pre id="resolve-command"><code>moon run cmd/cli --target native -- \
+  resolve \
+  --registry examples/registry.txt \
+  --root 'app:^1.0.0' \
+  --format lock</code></pre>
+          </article>
+          <article class="command-block">
+            <div class="block-title">
+              <h3>Plan the exact upgrade</h3>
+              <button class="copy-button" type="button" data-copy="plan-command">Copy</button>
+            </div>
+            <pre id="plan-command"><code>moon run cmd/cli --target native -- \
+  plan \
+  --registry examples/registry.txt \
+  --lock examples/current.lock \
+  --root 'app:^1.0.0' \
+  --strategy minimal</code></pre>
+          </article>
+          <article class="output-block">
+            <h3>Minimal-change output</h3>
+            <pre><code>strategy: minimal-change
+changes: 0
+target lock:
+# MoonDepSolve lock
+app 1.0.0
+core 1.0.0
+logging 1.0.0</code></pre>
+          </article>
+        </div>
+      </section>
+
+      <section class="section evidence" id="evidence" aria-labelledby="evidence-title">
+        <div class="section-heading">
+          <p class="eyebrow">Evidence</p>
+          <h2 id="evidence-title">Acceptance signals are part of the product surface.</h2>
+        </div>
+        <div class="evidence-grid">
+          <a href="https://github.com/python123-ops/moondepsolve/actions/workflows/ci.yml">
+            <span>CI workflow</span>
+            <strong>strict check, format, tests, native CLI</strong>
+          </a>
+          <a href="https://mooncakes.io/docs/python123/moondepsolve@0.3.1">
+            <span>Mooncakes</span>
+            <strong>python123/moondepsolve@0.3.1</strong>
+          </a>
+          <a href="https://gitlink.org.cn/python123/moondepsolve">
+            <span>GitLink</span>
+            <strong>competition repository mirror</strong>
+          </a>
+          <a href="https://github.com/python123-ops/moondepsolve">
+            <span>GitHub</span>
+            <strong>public mirror and CI evidence</strong>
+          </a>
+        </div>
+      </section>
+
+      <section class="section" id="api" aria-labelledby="api-title">
+        <div class="section-heading">
+          <p class="eyebrow">API surface</p>
+          <h2 id="api-title">A compact library boundary for package managers and audits.</h2>
+        </div>
+        <div class="api-table" role="table" aria-label="Public API capabilities">
+          <div role="row">
+            <span role="cell">Versions</span>
+            <code role="cell">parse_version, format_version, compare_version</code>
+          </div>
+          <div role="row">
+            <span role="cell">Resolution</span>
+            <code role="cell">resolve, parse_registry, format_lock, parse_lock</code>
+          </div>
+          <div role="row">
+            <span role="cell">Reports</span>
+            <code role="cell">build_dependency_graph, build_conflict_report</code>
+          </div>
+          <div role="row">
+            <span role="cell">Upgrade planning</span>
+            <code role="cell">default_upgrade_options, plan_upgrade, format_upgrade_plan</code>
+          </div>
+        </div>
+        <p class="api-note">
+          Exact signatures are tracked in
+          <a href="https://github.com/python123-ops/moondepsolve/blob/master/pkg.generated.mbti">pkg.generated.mbti</a>.
+        </p>
+      </section>
+
+      <section class="section competition" id="competition" aria-labelledby="competition-title">
+        <div class="section-heading">
+          <p class="eyebrow">OSC2026 delivery</p>
+          <h2 id="competition-title">Built as an inspectable competition artifact.</h2>
+        </div>
+        <div class="competition-list">
+          <a href="https://github.com/python123-ops/moondepsolve/blob/master/docs/competition/acceptance-checklist.md">Acceptance checklist</a>
+          <a href="https://github.com/python123-ops/moondepsolve/blob/master/docs/competition/demo-script.md">Demo script</a>
+          <a href="https://github.com/python123-ops/moondepsolve/blob/master/README.md">README</a>
+          <a href="https://github.com/python123-ops/moondepsolve/blob/master/LICENSE">Apache-2.0 license</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>MoonDepSolve</span>
+      <span>MoonBit dependency-resolution foundation</span>
+    </footer>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -8,6 +8,7 @@ MoonDepSolve is a MoonBit library and native CLI for semantic versions, determin
 
 - GitLink: <https://gitlink.org.cn/python123/moondepsolve>
 - GitHub: <https://github.com/python123-ops/moondepsolve>
+- Product site: [`site/index.html`](site/index.html)
 - Module: `python123/moondepsolve`
 - Maintainer identity: `python123 <python123@users.noreply.gitlink.org.cn>`
 
