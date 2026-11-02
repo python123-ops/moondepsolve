@@ -2,21 +2,39 @@
 
 [![CI](https://github.com/python123-ops/moondepsolve/actions/workflows/ci.yml/badge.svg)](https://github.com/python123-ops/moondepsolve/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Release](https://img.shields.io/badge/release-v0.3.2-brightgreen.svg)](CHANGELOG.md)
+[![Release](https://img.shields.io/badge/release-v0.4.0-brightgreen.svg)](CHANGELOG.md)
 
 MoonDepSolve is a MoonBit library and native CLI for semantic versions, deterministic dependency resolution, lock output, dependency graphs, conflict reports, and exact upgrade planning.
 
 - GitLink: <https://gitlink.org.cn/python123/moondepsolve>
 - GitHub: <https://github.com/python123-ops/moondepsolve>
 - Product site source: [`site/index.html`](https://github.com/python123-ops/moondepsolve/blob/master/site/index.html)
-- Module: `python123/moondepsolve`
+- Module: `python123-ops/moondepsolve`
 - Maintainer identity: `python123 <python123@users.noreply.gitlink.org.cn>`
 
 ## What It Solves
 
 MoonBit ecosystem tools need a small, reviewable dependency core: parse versions, match version ranges, choose compatible package versions, explain conflicts, and write stable lock output. MoonDepSolve keeps that boundary narrow so it can be reused by package managers, build tools, dependency audits, and release automation.
 
-## v0.3.2 Maintenance
+## Install and Migrate to v0.4.0
+
+The maintained module is now `python123-ops/moondepsolve`, matching the current Mooncakes account. The earlier `python123/moondepsolve@0.3.1` package remains available under its original owner; it cannot be updated using the current account. Version `0.4.0` carries the maintenance fixes from `0.3.2` into the new namespace.
+
+```bash
+moon add python123-ops/moondepsolve@0.4.0
+```
+
+Replace the old module path in your package imports:
+
+```moonbit
+import {
+  "python123-ops/moondepsolve",
+}
+```
+
+The package alias remains `@moondepsolve`, so API calls keep the same names. Existing users should remove the old `python123/moondepsolve` dependency after replacing its imports. The earlier GitHub releases and competition documents retain their original namespace as historical records.
+
+## Maintenance Included
 
 - Updated for MoonBit `0.10.19+97801ee1b` (2026-10-30) and `moonbitlang/async@0.22.7`.
 - Made the existing equality methods explicit to keep strict compiler checks passing.
@@ -134,7 +152,7 @@ Exact signatures are tracked in [`pkg.generated.mbti`](pkg.generated.mbti).
 - The OSC2026 materials are in [`docs/competition`](docs/competition), including the one-page proposal PDF, demo script, release notes, and acceptance checklist.
 - License and dependency notices are in [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-Mooncakes package: [`python123/moondepsolve@0.3.1`](https://mooncakes.io/docs/python123/moondepsolve@0.3.1) is published. Version `0.3.2` passes local package validation; registry publication requires authentication as the existing module owner `python123`. The current `python123-ops` login is rejected by the registry for that namespace.
+Mooncakes package and API documentation: [`python123-ops/moondepsolve@0.4.0`](https://mooncakes.io/docs/python123-ops/moondepsolve@0.4.0). Publication status and downloadable archives are tracked in the [GitHub release](https://github.com/python123-ops/moondepsolve/releases/tag/v0.4.0).
 
 ## License
 

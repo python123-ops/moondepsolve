@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "python123/moondepsolve"
+package "python123-ops/moondepsolve"
 
 // Values
 pub fn build_conflict_report(DepError, Registry) -> ConflictReport?

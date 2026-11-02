@@ -2,6 +2,15 @@
 
 本项目遵循语义化版本号，所有重要变更记录在此文件。
 
+## [0.4.0] - 2026-11-02
+
+### Migration
+
+- Change the maintained Mooncakes module from `python123/moondepsolve` to `python123-ops/moondepsolve`, matching the available publishing account.
+- Update the native CLI and demo imports, generated interfaces, installation instructions, and product-site package links.
+- Keep the `@moondepsolve` package alias and library API names. Consumers must replace the dependency and import path; the old `python123/moondepsolve@0.3.1` package remains under its original owner.
+- Carry forward all `0.3.2` compatibility and correctness fixes. Earlier GitHub release tags and competition records retain their original namespace.
+
 ## [0.3.2] - 2026-11-02
 
 ### Fixed

@@ -9,9 +9,9 @@
 //   "moonbitlang/x@0.4.6",
 // }
 
-name = "python123/moondepsolve"
+name = "python123-ops/moondepsolve"
 
-version = "0.3.2"
+version = "0.4.0"
 
 readme = "README.md"
 

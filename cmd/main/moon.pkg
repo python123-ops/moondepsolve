@@ -1,5 +1,5 @@
 import {
-  "python123/moondepsolve",
+  "python123-ops/moondepsolve",
 }
 
 pkgtype(kind: "executable")
