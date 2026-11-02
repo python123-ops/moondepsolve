@@ -17,7 +17,7 @@ priv enum CliCommand {
     lock_path~ : String,
     roots~ : Array[@moondepsolve.Dependency],
     strategy~ : @moondepsolve.UpgradeStrategy,
-    max_states~ : Int
+    max_states~ : Int32
   )
 }
 
@@ -140,7 +140,7 @@ fn parse_roots(inputs : Array[String]) -> Array[@moondepsolve.Dependency] raise 
       Ok(req) => req
       Err(error) => fail(@moondepsolve.format_error(error))
     }
-    roots.push({ name, req })
+    roots.push({ name, req, })
   }
   roots
 }
@@ -167,7 +167,7 @@ fn parse_upgrade_strategy(
 }
 
 ///|
-fn parse_max_states(input : String) -> Int raise {
+fn parse_max_states(input : String) -> Int32 raise {
   let value = @string.parse_int(input) catch {
     _ => fail("invalid max states '\{input}'; expected a positive integer")
   }

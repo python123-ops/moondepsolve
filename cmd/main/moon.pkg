@@ -2,6 +2,4 @@ import {
   "python123/moondepsolve",
 }
 
-options(
-  "is-main": true,
-)
+pkgtype(kind: "executable")

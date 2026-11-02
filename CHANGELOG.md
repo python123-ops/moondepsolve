@@ -2,6 +2,29 @@
 
 本项目遵循语义化版本号，所有重要变更记录在此文件。
 
+## [0.3.2] - 2026-11-02
+
+### Fixed
+
+- Made the existing `equal` and `not_equal` methods explicit for all 20 public Eq types, resolving MoonBit's implicit-method deprecation while preserving their call syntax.
+- Reject leading-zero and overflowing core version components, malformed prerelease identifiers, and range upper bounds that exceed the supported Int range.
+- Compare numeric prerelease identifiers by digit count and ASCII order without converting them to Int; very large identifiers now sort correctly.
+- Parse exact and comparator requirements with prerelease names such as `exp.1` without treating the embedded `x` as a wildcard.
+- Avoid subtraction overflow when comparing public version fields and remove the unused native CLI import.
+
+### Maintenance
+
+- Upgrade `moonbitlang/async` from `0.19.4` to `0.22.7` and pin CI to MoonBit `0.10.19+97801ee1b`.
+- Refresh executable package configuration and generated interfaces for the current toolchain. Generated interfaces spell the existing 32-bit `Int` alias as `Int32`.
+- Add eight regression tests: 35 tests pass on each of Wasm, Wasm GC, and JavaScript; 39 pass on native.
+- Run CI on Linux and Windows with all stable backends, four exact CLI outputs, three CLI error cases, and extracted-package validation.
+- Replace the shell-only CLI checker with `scripts/check_cli.py`; retain `scripts/demo-v0.3.sh` as a compatibility entry point.
+- Update pre-commit checks to reject warnings and use `.moonignore` to exclude competition documents, the product site, and maintenance scripts from published packages.
+
+### Publication
+
+- GitHub maintenance version: `0.3.2`. Updating `python123/moondepsolve` on Mooncakes requires its owner `python123`; the available `python123-ops` login receives a namespace-mismatch response.
+
 ## [0.3.1] - 2026-07-08
 
 ### Changed

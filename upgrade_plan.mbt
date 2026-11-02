@@ -5,10 +5,16 @@ pub(all) enum UpgradeStrategy {
 } derive(Eq)
 
 ///|
+pub extend UpgradeStrategy with Eq::{equal, not_equal}
+
+///|
 pub(all) struct UpgradeOptions {
   strategy : UpgradeStrategy
-  max_states : Int
+  max_states : Int32
 } derive(Eq)
+
+///|
+pub extend UpgradeOptions with Eq::{equal, not_equal}
 
 ///|
 pub(all) enum UpgradeChangeKind {
@@ -19,12 +25,18 @@ pub(all) enum UpgradeChangeKind {
 } derive(Eq)
 
 ///|
+pub extend UpgradeChangeKind with Eq::{equal, not_equal}
+
+///|
 pub(all) struct UpgradeChange {
   kind : UpgradeChangeKind
   package_name : String
   from_version : Version?
   to_version : Version?
 } derive(Eq)
+
+///|
+pub extend UpgradeChange with Eq::{equal, not_equal}
 
 ///|
 pub(all) struct UpgradePlan {
@@ -34,26 +46,32 @@ pub(all) struct UpgradePlan {
 } derive(Eq)
 
 ///|
+pub extend UpgradePlan with Eq::{equal, not_equal}
+
+///|
 pub(all) enum UpgradeError {
   DependencyFailure(DepError)
-  InvalidSearchLimit(Int)
-  SearchLimitExceeded(Int)
+  InvalidSearchLimit(Int32)
+  SearchLimitExceeded(Int32)
 } derive(Eq)
+
+///|
+pub extend UpgradeError with Eq::{equal, not_equal}
 
 ///|
 priv struct UpgradeSearch {
   registry : Registry
   current : Resolution
-  max_states : Int
-  mut states : Int
+  max_states : Int32
+  mut states : Int32
   mut exceeded : Bool
   mut best : Resolution
-  mut best_cost : Int
+  mut best_cost : Int32
 }
 
 ///|
 pub fn default_upgrade_options(strategy : UpgradeStrategy) -> UpgradeOptions {
-  { strategy, max_states: 100000 }
+  { strategy, max_states: 100000, }
 }
 
 ///|
@@ -86,7 +104,7 @@ pub fn plan_upgrade(
       let roots = root.copy()
       roots.sort_by(compare_dependency)
       for dependency in roots {
-        pending.push({ dependency, path: "root -> " + dependency.name })
+        pending.push({ dependency, path: "root -> " + dependency.name, })
       }
       search_upgrade_solutions(search, [], pending)
       if search.exceeded {
@@ -147,7 +165,7 @@ fn search_upgrade_solutions(
     return
   }
   if pending.length() == 0 {
-    let candidate = canonical_resolution({ packages: selected })
+    let candidate = canonical_resolution({ packages: selected, })
     let cost = upgrade_changes(search.current, candidate).length()
     if cost < search.best_cost ||
       (cost == search.best_cost && prefer_resolution(candidate, search.best)) {
@@ -248,7 +266,7 @@ fn upgrade_changes(
 fn partial_upgrade_cost(
   current : Resolution,
   selected : Array[PackageVersion],
-) -> Int {
+) -> Int32 {
   let mut cost = 0
   for item in selected {
     match find_selected(current.packages, item.name) {
@@ -273,7 +291,7 @@ fn canonical_resolution(resolution : Resolution) -> Resolution {
 fn compare_upgrade_package(
   left : PackageVersion,
   right : PackageVersion,
-) -> Int {
+) -> Int32 {
   let by_name = compare_text(left.name, right.name)
   if by_name != 0 {
     return by_name
@@ -282,7 +300,7 @@ fn compare_upgrade_package(
 }
 
 ///|
-fn compare_dependency(left : Dependency, right : Dependency) -> Int {
+fn compare_dependency(left : Dependency, right : Dependency) -> Int32 {
   let by_name = compare_text(left.name, right.name)
   if by_name != 0 {
     return by_name

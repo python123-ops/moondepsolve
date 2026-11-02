@@ -11,7 +11,7 @@
 
 name = "python123/moondepsolve"
 
-version = "0.3.1"
+version = "0.3.2"
 
 readme = "README.md"
 
@@ -30,5 +30,5 @@ keywords = [
 description = "A MoonBit semantic version, version range, and dependency resolution library for package ecosystem tooling."
 
 import {
-  "moonbitlang/async@0.19.4",
+  "moonbitlang/async@0.22.7",
 }

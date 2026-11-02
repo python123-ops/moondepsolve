@@ -1,0 +1,13 @@
+/_build/
+/target
+/.mooncakes/
+/.moonagent/
+/.DS_Store
+/uncovered.log
+/.github/
+/.githooks/
+/docs/
+/site/
+/scripts/
+/AGENTS.md
+/CONTRIBUTING.md

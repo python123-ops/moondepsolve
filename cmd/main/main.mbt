@@ -2,8 +2,8 @@
 fn main {
   let registry : @moondepsolve.Registry = {
     packages: [
-      { name: "core", version: version("1.0.0"), dependencies: [] },
-      { name: "core", version: version("1.2.0"), dependencies: [] },
+      { name: "core", version: version("1.0.0"), dependencies: [], },
+      { name: "core", version: version("1.2.0"), dependencies: [], },
       {
         name: "http",
         version: version("0.3.4"),
@@ -55,7 +55,7 @@ fn version(input : String) -> @moondepsolve.Version {
 ///|
 fn dependency(name : String, req : String) -> @moondepsolve.Dependency {
   match @moondepsolve.parse_req(req) {
-    Ok(parsed) => { name, req: parsed }
+    Ok(parsed) => { name, req: parsed, }
     Err(err) => abort(@moondepsolve.format_error(err))
   }
 }

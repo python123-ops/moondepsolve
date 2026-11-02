@@ -18,7 +18,7 @@ fn req_ok(input : String) -> @moondepsolve.VersionReq {
 
 ///|
 fn dep(name : String, req : String) -> @moondepsolve.Dependency {
-  { name, req: req_ok(req) }
+  { name, req: req_ok(req), }
 }
 
 ///|
@@ -27,7 +27,7 @@ fn pkg(
   version : String,
   dependencies : Array[@moondepsolve.Dependency],
 ) -> @moondepsolve.PackageVersion {
-  { name, version: version_ok(version), dependencies }
+  { name, version: version_ok(version), dependencies, }
 }
 
 ///|

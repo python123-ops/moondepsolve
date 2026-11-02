@@ -16,7 +16,7 @@ fn upgrade_req(input : String) -> @moondepsolve.VersionReq {
 
 ///|
 fn upgrade_dep(name : String, req : String) -> @moondepsolve.Dependency {
-  { name, req: upgrade_req(req) }
+  { name, req: upgrade_req(req), }
 }
 
 ///|
@@ -25,7 +25,7 @@ fn upgrade_pkg(
   version : String,
   dependencies : Array[@moondepsolve.Dependency],
 ) -> @moondepsolve.PackageVersion {
-  { name, version: upgrade_version(version), dependencies }
+  { name, version: upgrade_version(version), dependencies, }
 }
 
 ///|
@@ -34,7 +34,7 @@ fn upgrade_plan(
   current : @moondepsolve.Resolution,
   packages : Array[@moondepsolve.PackageVersion],
   strategy : @moondepsolve.UpgradeStrategy,
-  max_states : Int,
+  max_states : Int32,
 ) -> @moondepsolve.UpgradePlan {
   match
     @moondepsolve.plan_upgrade(root, current, { packages, }, {
@@ -152,7 +152,7 @@ test "upgrade plan classifies add remove and downgrade in stable order" {
 ///|
 test "upgrade planning reports invalid and exhausted search limits" {
   let root = [upgrade_dep("core", "^1.0.0")]
-  let current : @moondepsolve.Resolution = { packages: [] }
+  let current : @moondepsolve.Resolution = { packages: [], }
   let repo : @moondepsolve.Registry = {
     packages: [
       upgrade_pkg("core", "1.0.0", []),
@@ -212,7 +212,7 @@ test "minimal-change plan keeps an already valid resolution unchanged" {
 
 ///|
 test "minimal-change ties prefer higher versions independent of registry order" {
-  let current : @moondepsolve.Resolution = { packages: [] }
+  let current : @moondepsolve.Resolution = { packages: [], }
   let root = [upgrade_dep("app", "^1.0.0")]
   let low = upgrade_pkg("app", "1.0.0", [])
   let high = upgrade_pkg("app", "1.2.0", [])
@@ -244,7 +244,7 @@ test "upgrade errors and highest-compatible plans have stable text" {
   )
   let plan = upgrade_plan(
     [upgrade_dep("core", "^1.0.0")],
-    { packages: [upgrade_pkg("core", "1.0.0", [])] },
+    { packages: [upgrade_pkg("core", "1.0.0", [])], },
     [upgrade_pkg("core", "1.0.0", []), upgrade_pkg("core", "1.2.0", [])],
     HighestCompatible,
     100000,
@@ -259,7 +259,7 @@ test "upgrade errors and highest-compatible plans have stable text" {
 test "multiple requirements for one root package are all enforced" {
   let plan = upgrade_plan(
     [upgrade_dep("core", ">=1.0.0"), upgrade_dep("core", "<2.0.0")],
-    { packages: [] },
+    { packages: [], },
     [
       upgrade_pkg("core", "1.0.0", []),
       upgrade_pkg("core", "1.5.0", []),

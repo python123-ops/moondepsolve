@@ -16,7 +16,7 @@ fn graph_req(input : String) -> @moondepsolve.VersionReq {
 
 ///|
 fn graph_dep(name : String, req : String) -> @moondepsolve.Dependency {
-  { name, req: graph_req(req) }
+  { name, req: graph_req(req), }
 }
 
 ///|
@@ -32,7 +32,7 @@ test "build dependency graph with stable root transitive and unresolved edges" {
           graph_dep("missing", "^0.1.0"),
         ],
       },
-      { name: "core", version: graph_version("1.4.0"), dependencies: [] },
+      { name: "core", version: graph_version("1.4.0"), dependencies: [], },
     ],
   }
   let graph = @moondepsolve.build_dependency_graph(
@@ -61,7 +61,7 @@ test "dependency graph output ignores input order and escapes dot labels" {
   let special = "quote\\\"line\nnext"
   let resolution : @moondepsolve.Resolution = {
     packages: [
-      { name: special, version: graph_version("1.0.0"), dependencies: [] },
+      { name: special, version: graph_version("1.0.0"), dependencies: [], },
     ],
   }
   let first = @moondepsolve.build_dependency_graph(
@@ -85,8 +85,8 @@ test "dependency graph output ignores input order and escapes dot labels" {
 test "dependency graph keeps multiple selected versions in stable order" {
   let resolution : @moondepsolve.Resolution = {
     packages: [
-      { name: "core", version: graph_version("2.0.0"), dependencies: [] },
-      { name: "core", version: graph_version("1.0.0"), dependencies: [] },
+      { name: "core", version: graph_version("2.0.0"), dependencies: [], },
+      { name: "core", version: graph_version("1.0.0"), dependencies: [], },
     ],
   }
   let graph = @moondepsolve.build_dependency_graph([], resolution)

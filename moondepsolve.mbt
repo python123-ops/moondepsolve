@@ -1,10 +1,13 @@
 ///|
 pub(all) struct Version {
-  major : Int
-  minor : Int
-  patch : Int
+  major : Int32
+  minor : Int32
+  patch : Int32
   prerelease : String?
 } derive(Eq)
+
+///|
+pub extend Version with Eq::{equal, not_equal}
 
 ///|
 pub(all) enum CompareOp {
@@ -16,10 +19,16 @@ pub(all) enum CompareOp {
 } derive(Eq)
 
 ///|
+pub extend CompareOp with Eq::{equal, not_equal}
+
+///|
 pub(all) struct Comparator {
   op : CompareOp
   version : Version
 } derive(Eq)
+
+///|
+pub extend Comparator with Eq::{equal, not_equal}
 
 ///|
 pub(all) struct VersionReq {
@@ -28,10 +37,16 @@ pub(all) struct VersionReq {
 } derive(Eq)
 
 ///|
+pub extend VersionReq with Eq::{equal, not_equal}
+
+///|
 pub(all) struct Dependency {
   name : String
   req : VersionReq
 } derive(Eq)
+
+///|
+pub extend Dependency with Eq::{equal, not_equal}
 
 ///|
 pub(all) struct PackageVersion {
@@ -41,14 +56,23 @@ pub(all) struct PackageVersion {
 } derive(Eq)
 
 ///|
+pub extend PackageVersion with Eq::{equal, not_equal}
+
+///|
 pub(all) struct Registry {
   packages : Array[PackageVersion]
 } derive(Eq)
 
 ///|
+pub extend Registry with Eq::{equal, not_equal}
+
+///|
 pub(all) struct Resolution {
   packages : Array[PackageVersion]
 } derive(Eq)
+
+///|
+pub extend Resolution with Eq::{equal, not_equal}
 
 ///|
 priv struct PendingDep {
@@ -66,6 +90,9 @@ pub(all) enum DepError {
 } derive(Eq)
 
 ///|
+pub extend DepError with Eq::{equal, not_equal}
+
+///|
 pub fn parse_version(input : String) -> Result[Version, DepError] {
   let text = input.trim().to_owned()
   let (core, prerelease) = match text.split_once("-") {
@@ -73,6 +100,9 @@ pub fn parse_version(input : String) -> Result[Version, DepError] {
       let pre = right.to_owned()
       if pre.length() == 0 {
         return Err(InvalidVersion(text, "empty prerelease identifier"))
+      }
+      if !valid_prerelease(pre) {
+        return Err(InvalidVersion(text, "invalid prerelease identifier"))
       }
       (left.to_owned(), Some(pre))
     }
@@ -85,7 +115,7 @@ pub fn parse_version(input : String) -> Result[Version, DepError] {
   match
     (parse_number(parts[0]), parse_number(parts[1]), parse_number(parts[2])) {
     (Some(major), Some(minor), Some(patch)) =>
-      Ok({ major, minor, patch, prerelease })
+      Ok({ major, minor, patch, prerelease, })
     _ => Err(InvalidVersion(input, "version segments must be numeric"))
   }
 }
@@ -100,15 +130,15 @@ pub fn format_version(version : Version) -> String {
 }
 
 ///|
-pub fn compare_version(left : Version, right : Version) -> Int {
+pub fn compare_version(left : Version, right : Version) -> Int32 {
   if left.major != right.major {
-    return left.major - right.major
+    return compare_int(left.major, right.major)
   }
   if left.minor != right.minor {
-    return left.minor - right.minor
+    return compare_int(left.minor, right.minor)
   }
   if left.patch != right.patch {
-    return left.patch - right.patch
+    return compare_int(left.patch, right.patch)
   }
   match (left.prerelease, right.prerelease) {
     (None, None) => 0
@@ -129,12 +159,14 @@ pub fn parse_req(input : String) -> Result[VersionReq, DepError] {
       Ok(version) => version
       Err(_) => return Err(InvalidReq(input, "invalid caret requirement"))
     }
+    let upper = match caret_upper(base) {
+      Some(upper) => upper
+      None =>
+        return Err(InvalidReq(input, "caret upper bound exceeds Int range"))
+    }
     return Ok({
       raw,
-      comparators: [
-        { op: Gte, version: base },
-        { op: Lt, version: caret_upper(base) },
-      ],
+      comparators: [{ op: Gte, version: base, }, { op: Lt, version: upper, }],
     })
   }
   if raw.has_prefix("~") {
@@ -142,10 +174,13 @@ pub fn parse_req(input : String) -> Result[VersionReq, DepError] {
       Ok(version) => version
       Err(_) => return Err(InvalidReq(input, "invalid tilde requirement"))
     }
+    if base.minor == 2147483647 {
+      return Err(InvalidReq(input, "tilde upper bound exceeds Int range"))
+    }
     return Ok({
       raw,
       comparators: [
-        { op: Gte, version: base },
+        { op: Gte, version: base, },
         {
           op: Lt,
           version: {
@@ -158,14 +193,15 @@ pub fn parse_req(input : String) -> Result[VersionReq, DepError] {
       ],
     })
   }
-  if raw.contains("x") || raw.contains("X") || raw.contains("*") {
+  if !raw.contains("-") &&
+    (raw.has_suffix(".x") || raw.has_suffix(".X") || raw.has_suffix(".*")) {
     return parse_wildcard_req(raw)
   }
   if is_comparator_req(raw) {
     return parse_comparator_req(raw)
   }
   match parse_version(raw) {
-    Ok(version) => Ok({ raw, comparators: [{ op: Eq, version }] })
+    Ok(version) => Ok({ raw, comparators: [{ op: Eq, version, }], })
     Err(_) => Err(InvalidReq(input, "expected version requirement"))
   }
 }
@@ -192,7 +228,7 @@ pub fn resolve(
 ) -> Result[Resolution, DepError] {
   let pending : Array[PendingDep] = []
   for dependency in root {
-    pending.push({ dependency, path: "root -> " + dependency.name })
+    pending.push({ dependency, path: "root -> " + dependency.name, })
   }
   solve(registry, [], pending)
 }
@@ -259,7 +295,7 @@ fn parse_lock_line(line : String) -> Result[PackageVersion, DepError] {
     return Err(InvalidReq(line, "lock line must be: name version"))
   }
   match parse_version(words[1]) {
-    Ok(version) => Ok({ name: words[0], version, dependencies: [] })
+    Ok(version) => Ok({ name: words[0], version, dependencies: [], })
     Err(err) => Err(err)
   }
 }
@@ -291,7 +327,7 @@ fn parse_registry_line(line : String) -> Result[PackageVersion, DepError] {
       }
     }
   }
-  Ok({ name: words[0], version, dependencies })
+  Ok({ name: words[0], version, dependencies, })
 }
 
 ///|
@@ -304,7 +340,7 @@ fn parse_dependency_spec(input : String) -> Result[Dependency, DepError] {
         return Err(InvalidReq(input, "dependency name is empty"))
       }
       match parse_req(req_text) {
-        Ok(req) => Ok({ name, req })
+        Ok(req) => Ok({ name, req, })
         Err(err) => Err(err)
       }
     }
@@ -331,7 +367,7 @@ fn solve(
   pending : Array[PendingDep],
 ) -> Result[Resolution, DepError] {
   if pending.length() == 0 {
-    return Ok({ packages: selected })
+    return Ok({ packages: selected, })
   }
   let current = pending[0]
   let rest = pending[1:].to_owned()
@@ -444,7 +480,7 @@ fn parse_comparator_req(input : String) -> Result[VersionReq, DepError] {
       }
     }
   }
-  Ok({ raw: input, comparators })
+  Ok({ raw: input, comparators, })
 }
 
 ///|
@@ -470,11 +506,11 @@ fn parse_comparator(input : String) -> Result[Comparator, DepError] {
 ///|
 fn parse_comparator_version(
   input : String,
-  offset : Int,
+  offset : Int32,
   op : CompareOp,
 ) -> Result[Comparator, DepError] {
   match parse_version(input[offset:].to_owned()) {
-    Ok(version) => Ok({ op, version })
+    Ok(version) => Ok({ op, version, })
     Err(_) => Err(InvalidReq(input, "invalid comparator version"))
   }
 }
@@ -489,13 +525,18 @@ fn parse_wildcard_req(input : String) -> Result[VersionReq, DepError] {
     (Some(major), Some(minor)) => {
       let patch = parts[2].to_lower()
       if patch == "x" || patch == "*" {
+        if minor == 2147483647 {
+          return Err(
+            InvalidReq(input, "wildcard upper bound exceeds Int range"),
+          )
+        }
         Ok({
           raw: input,
           comparators: [
-            { op: Gte, version: { major, minor, patch: 0, prerelease: None } },
+            { op: Gte, version: { major, minor, patch: 0, prerelease: None, }, },
             {
               op: Lt,
-              version: { major, minor: minor + 1, patch: 0, prerelease: None },
+              version: { major, minor: minor + 1, patch: 0, prerelease: None, },
             },
           ],
         })
@@ -508,13 +549,22 @@ fn parse_wildcard_req(input : String) -> Result[VersionReq, DepError] {
 }
 
 ///|
-fn caret_upper(version : Version) -> Version {
+fn caret_upper(version : Version) -> Version? {
   if version.major > 0 {
-    { major: version.major + 1, minor: 0, patch: 0, prerelease: None }
+    if version.major == 2147483647 {
+      return None
+    }
+    Some({ major: version.major + 1, minor: 0, patch: 0, prerelease: None, })
   } else if version.minor > 0 {
-    { major: 0, minor: version.minor + 1, patch: 0, prerelease: None }
+    if version.minor == 2147483647 {
+      return None
+    }
+    Some({ major: 0, minor: version.minor + 1, patch: 0, prerelease: None, })
   } else {
-    { major: 0, minor: 0, patch: version.patch + 1, prerelease: None }
+    if version.patch == 2147483647 {
+      return None
+    }
+    Some({ major: 0, minor: 0, patch: version.patch + 1, prerelease: None, })
   }
 }
 
@@ -527,8 +577,11 @@ fn is_comparator_req(input : String) -> Bool {
 }
 
 ///|
-fn parse_number(input : String) -> Int? {
+fn parse_number(input : String) -> Int32? {
   if input.length() == 0 {
+    return None
+  }
+  if input.length() > 1 && input.has_prefix("0") {
     return None
   }
   let mut value = 0
@@ -536,7 +589,11 @@ fn parse_number(input : String) -> Int? {
     if !is_digit(c) {
       return None
     }
-    value = value * 10 + (c.to_int() - '0'.to_int())
+    let digit = c.to_int() - '0'.to_int()
+    if value > (2147483647 - digit) / 10 {
+      return None
+    }
+    value = value * 10 + digit
   }
   Some(value)
 }
@@ -547,7 +604,7 @@ fn is_digit(c : Char) -> Bool {
 }
 
 ///|
-fn compare_prerelease(left : String, right : String) -> Int {
+fn compare_prerelease(left : String, right : String) -> Int32 {
   let left_parts = left.split(".").map(part => part.to_owned()).collect()
   let right_parts = right.split(".").map(part => part.to_owned()).collect()
   let length = if left_parts.length() < right_parts.length() {
@@ -565,17 +622,66 @@ fn compare_prerelease(left : String, right : String) -> Int {
 }
 
 ///|
-fn compare_identifier(left : String, right : String) -> Int {
-  match (parse_number(left), parse_number(right)) {
-    (Some(a), Some(b)) => a - b
-    (Some(_), None) => -1
-    (None, Some(_)) => 1
-    (None, None) => compare_text(left, right)
+fn compare_identifier(left : String, right : String) -> Int32 {
+  match (is_numeric_identifier(left), is_numeric_identifier(right)) {
+    (true, true) => {
+      // Valid numeric identifiers have no leading zeroes, so digit count
+      // determines order before lexical comparison, without an Int conversion.
+      let order = compare_int(left.length(), right.length())
+      if order != 0 {
+        order
+      } else {
+        compare_text(left, right)
+      }
+    }
+    (true, false) => -1
+    (false, true) => 1
+    (false, false) => compare_text(left, right)
   }
 }
 
 ///|
-fn compare_text(left : String, right : String) -> Int {
+fn compare_int(left : Int32, right : Int32) -> Int32 {
+  if left < right {
+    -1
+  } else if left > right {
+    1
+  } else {
+    0
+  }
+}
+
+///|
+fn is_numeric_identifier(input : String) -> Bool {
+  input.length() > 0 && input.iter().all(is_digit)
+}
+
+///|
+fn valid_prerelease(input : String) -> Bool {
+  for part in input.split(".") {
+    let identifier = part.to_owned()
+    if identifier.length() == 0 {
+      return false
+    }
+    for c in identifier.iter() {
+      if !is_digit(c) &&
+        !(c >= 'A' && c <= 'Z') &&
+        !(c >= 'a' && c <= 'z') &&
+        c != '-' {
+        return false
+      }
+    }
+    if is_numeric_identifier(identifier) &&
+      identifier.length() > 1 &&
+      identifier.has_prefix("0") {
+      return false
+    }
+  }
+  true
+}
+
+///|
+fn compare_text(left : String, right : String) -> Int32 {
   let left_chars = left.iter().to_array()
   let right_chars = right.iter().to_array()
   let length = if left_chars.length() < right_chars.length() {

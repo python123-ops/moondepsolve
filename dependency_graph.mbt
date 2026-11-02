@@ -6,6 +6,9 @@ pub(all) enum GraphNode {
 } derive(Eq)
 
 ///|
+pub extend GraphNode with Eq::{equal, not_equal}
+
+///|
 pub(all) struct DependencyEdge {
   from : GraphNode
   to : GraphNode
@@ -13,10 +16,16 @@ pub(all) struct DependencyEdge {
 } derive(Eq)
 
 ///|
+pub extend DependencyEdge with Eq::{equal, not_equal}
+
+///|
 pub(all) struct DependencyGraph {
   nodes : Array[GraphNode]
   edges : Array[DependencyEdge]
 } derive(Eq)
+
+///|
+pub extend DependencyGraph with Eq::{equal, not_equal}
 
 ///|
 pub fn build_dependency_graph(
@@ -29,7 +38,7 @@ pub fn build_dependency_graph(
   let edges : Array[DependencyEdge] = []
   for dependency in root {
     let target = dependency_target(packages, dependency.name, unresolved)
-    edges.push({ from: Root, to: target, requirement: dependency.req.raw })
+    edges.push({ from: Root, to: target, requirement: dependency.req.raw, })
   }
   for item in packages {
     for dependency in item.dependencies {
@@ -50,7 +59,7 @@ pub fn build_dependency_graph(
   for name in unresolved {
     nodes.push(Unresolved(name))
   }
-  { nodes, edges }
+  { nodes, edges, }
 }
 
 ///|
@@ -115,7 +124,7 @@ fn contains_text(values : Array[String], expected : String) -> Bool {
 }
 
 ///|
-fn compare_package(left : PackageVersion, right : PackageVersion) -> Int {
+fn compare_package(left : PackageVersion, right : PackageVersion) -> Int32 {
   let name_order = compare_text(left.name, right.name)
   if name_order != 0 {
     name_order
@@ -125,7 +134,7 @@ fn compare_package(left : PackageVersion, right : PackageVersion) -> Int {
 }
 
 ///|
-fn compare_edge(left : DependencyEdge, right : DependencyEdge) -> Int {
+fn compare_edge(left : DependencyEdge, right : DependencyEdge) -> Int32 {
   let from_order = compare_text(
     graph_node_sort_key(left.from),
     graph_node_sort_key(right.from),
@@ -162,7 +171,7 @@ fn graph_node_label(node : GraphNode) -> String {
 }
 
 ///|
-fn graph_node_index(nodes : Array[GraphNode], target : GraphNode) -> Int {
+fn graph_node_index(nodes : Array[GraphNode], target : GraphNode) -> Int32 {
   for index, node in nodes {
     if node == target {
       return index

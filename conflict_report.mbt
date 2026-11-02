@@ -6,6 +6,9 @@ pub(all) enum ConflictKind {
 } derive(Eq)
 
 ///|
+pub extend ConflictKind with Eq::{equal, not_equal}
+
+///|
 pub(all) struct ConflictReport {
   kind : ConflictKind
   package_name : String
@@ -14,6 +17,9 @@ pub(all) struct ConflictReport {
   dependency_path : String?
   available_versions : Array[Version]
 } derive(Eq)
+
+///|
+pub extend ConflictReport with Eq::{equal, not_equal}
 
 ///|
 pub fn build_conflict_report(

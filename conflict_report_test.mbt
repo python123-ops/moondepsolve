@@ -75,7 +75,7 @@ test "build selected-version report with path and stable formatting" {
 
 ///|
 test "parse errors do not produce conflict reports" {
-  let repo : @moondepsolve.Registry = { packages: [] }
+  let repo : @moondepsolve.Registry = { packages: [], }
   assert_true(
     @moondepsolve.build_conflict_report(InvalidVersion("1", "bad"), repo)
     is None,

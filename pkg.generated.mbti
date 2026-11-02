@@ -6,7 +6,7 @@ pub fn build_conflict_report(DepError, Registry) -> ConflictReport?
 
 pub fn build_dependency_graph(Array[Dependency], Resolution) -> DependencyGraph
 
-pub fn compare_version(Version, Version) -> Int
+pub fn compare_version(Version, Version) -> Int32
 
 pub fn default_upgrade_options(UpgradeStrategy) -> UpgradeOptions
 
@@ -47,6 +47,8 @@ pub(all) struct Comparator {
   op : CompareOp
   version : Version
 } derive(Eq)
+pub fn Comparator::equal(Self, Self) -> Bool
+pub fn Comparator::not_equal(Self, Self) -> Bool
 
 pub(all) enum CompareOp {
   Eq
@@ -55,12 +57,16 @@ pub(all) enum CompareOp {
   Lt
   Lte
 } derive(Eq)
+pub fn CompareOp::equal(Self, Self) -> Bool
+pub fn CompareOp::not_equal(Self, Self) -> Bool
 
 pub(all) enum ConflictKind {
   MissingPackage
   NoMatchingVersion
   SelectedVersionConflict
 } derive(Eq)
+pub fn ConflictKind::equal(Self, Self) -> Bool
+pub fn ConflictKind::not_equal(Self, Self) -> Bool
 
 pub(all) struct ConflictReport {
   kind : ConflictKind
@@ -70,6 +76,8 @@ pub(all) struct ConflictReport {
   dependency_path : String?
   available_versions : Array[Version]
 } derive(Eq)
+pub fn ConflictReport::equal(Self, Self) -> Bool
+pub fn ConflictReport::not_equal(Self, Self) -> Bool
 
 pub(all) enum DepError {
   InvalidVersion(String, String)
@@ -78,42 +86,58 @@ pub(all) enum DepError {
   NoMatchingVersion(String, String)
   VersionConflict(String, String, String, String)
 } derive(Eq)
+pub fn DepError::equal(Self, Self) -> Bool
+pub fn DepError::not_equal(Self, Self) -> Bool
 
 pub(all) struct Dependency {
   name : String
   req : VersionReq
 } derive(Eq)
+pub fn Dependency::equal(Self, Self) -> Bool
+pub fn Dependency::not_equal(Self, Self) -> Bool
 
 pub(all) struct DependencyEdge {
   from : GraphNode
   to : GraphNode
   requirement : String
 } derive(Eq)
+pub fn DependencyEdge::equal(Self, Self) -> Bool
+pub fn DependencyEdge::not_equal(Self, Self) -> Bool
 
 pub(all) struct DependencyGraph {
   nodes : Array[GraphNode]
   edges : Array[DependencyEdge]
 } derive(Eq)
+pub fn DependencyGraph::equal(Self, Self) -> Bool
+pub fn DependencyGraph::not_equal(Self, Self) -> Bool
 
 pub(all) enum GraphNode {
   Root
   Package(String, Version)
   Unresolved(String)
 } derive(Eq)
+pub fn GraphNode::equal(Self, Self) -> Bool
+pub fn GraphNode::not_equal(Self, Self) -> Bool
 
 pub(all) struct PackageVersion {
   name : String
   version : Version
   dependencies : Array[Dependency]
 } derive(Eq)
+pub fn PackageVersion::equal(Self, Self) -> Bool
+pub fn PackageVersion::not_equal(Self, Self) -> Bool
 
 pub(all) struct Registry {
   packages : Array[PackageVersion]
 } derive(Eq)
+pub fn Registry::equal(Self, Self) -> Bool
+pub fn Registry::not_equal(Self, Self) -> Bool
 
 pub(all) struct Resolution {
   packages : Array[PackageVersion]
 } derive(Eq)
+pub fn Resolution::equal(Self, Self) -> Bool
+pub fn Resolution::not_equal(Self, Self) -> Bool
 
 pub(all) struct UpgradeChange {
   kind : UpgradeChangeKind
@@ -121,6 +145,8 @@ pub(all) struct UpgradeChange {
   from_version : Version?
   to_version : Version?
 } derive(Eq)
+pub fn UpgradeChange::equal(Self, Self) -> Bool
+pub fn UpgradeChange::not_equal(Self, Self) -> Bool
 
 pub(all) enum UpgradeChangeKind {
   Add
@@ -128,42 +154,55 @@ pub(all) enum UpgradeChangeKind {
   Upgrade
   Downgrade
 } derive(Eq)
+pub fn UpgradeChangeKind::equal(Self, Self) -> Bool
+pub fn UpgradeChangeKind::not_equal(Self, Self) -> Bool
 
 pub(all) enum UpgradeError {
   DependencyFailure(DepError)
-  InvalidSearchLimit(Int)
-  SearchLimitExceeded(Int)
+  InvalidSearchLimit(Int32)
+  SearchLimitExceeded(Int32)
 } derive(Eq)
+pub fn UpgradeError::equal(Self, Self) -> Bool
+pub fn UpgradeError::not_equal(Self, Self) -> Bool
 
 pub(all) struct UpgradeOptions {
   strategy : UpgradeStrategy
-  max_states : Int
+  max_states : Int32
 } derive(Eq)
+pub fn UpgradeOptions::equal(Self, Self) -> Bool
+pub fn UpgradeOptions::not_equal(Self, Self) -> Bool
 
 pub(all) struct UpgradePlan {
   strategy : UpgradeStrategy
   resolution : Resolution
   changes : Array[UpgradeChange]
 } derive(Eq)
+pub fn UpgradePlan::equal(Self, Self) -> Bool
+pub fn UpgradePlan::not_equal(Self, Self) -> Bool
 
 pub(all) enum UpgradeStrategy {
   HighestCompatible
   MinimalChange
 } derive(Eq)
+pub fn UpgradeStrategy::equal(Self, Self) -> Bool
+pub fn UpgradeStrategy::not_equal(Self, Self) -> Bool
 
 pub(all) struct Version {
-  major : Int
-  minor : Int
-  patch : Int
+  major : Int32
+  minor : Int32
+  patch : Int32
   prerelease : String?
 } derive(Eq)
+pub fn Version::equal(Self, Self) -> Bool
+pub fn Version::not_equal(Self, Self) -> Bool
 
 pub(all) struct VersionReq {
   raw : String
   comparators : Array[Comparator]
 } derive(Eq)
+pub fn VersionReq::equal(Self, Self) -> Bool
+pub fn VersionReq::not_equal(Self, Self) -> Bool
 
 // Type aliases
 
 // Traits
-

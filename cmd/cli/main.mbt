@@ -9,7 +9,7 @@ async fn main {
 }
 
 ///|
-extern "c" fn process_exit(code : Int) = "exit"
+extern "c" fn process_exit(code : Int32) = "exit"
 
 ///|
 fn cli_error_text(error : Error) -> String {
@@ -66,7 +66,7 @@ async fn run_plan(
   lock_path : String,
   roots : Array[@moondepsolve.Dependency],
   strategy : @moondepsolve.UpgradeStrategy,
-  max_states : Int,
+  max_states : Int32,
 ) -> Unit {
   let registry = load_registry(registry_path)
   let current = load_lock(lock_path)

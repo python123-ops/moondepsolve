@@ -3,10 +3,21 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  MOONBIT_INSTALL_VERSION: "0.10.19+97801ee1b"
 
 jobs:
   quality:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout
@@ -23,10 +34,19 @@ jobs:
       - name: Verify contributor identity
         run: python scripts/check_contributor_identity.py --ref HEAD
 
-      - name: Install MoonBit
+      - name: Install MoonBit on Linux
+        if: runner.os == 'Linux'
+        shell: bash
         run: |
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: Install MoonBit on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Invoke-RestMethod https://cli.moonbitlang.com/install/powershell.ps1 | Invoke-Expression
+          "$env:USERPROFILE/.moon/bin" >> $env:GITHUB_PATH
 
       - name: Update MoonBit registry
         run: moon update
@@ -45,16 +65,17 @@ jobs:
       - name: Check diagnostics
         run: moon check --deny-warn
 
-      - name: Run library tests with coverage
-        run: moon test --deny-warn --enable-coverage
+      - name: Run all stable backend tests
+        run: moon test --target all --deny-warn
 
       - name: Run in-memory demo
         run: moon run cmd/main --deny-warn
 
-      - name: Build and test native CLI
-        run: |
-          moon check --target native --deny-warn
-          moon test --target native --deny-warn
+      - name: Check native CLI diagnostics
+        run: moon check --target native --deny-warn
 
       - name: Verify file-driven CLI outputs
-        run: sh scripts/demo-v0.3.sh
+        run: python scripts/check_cli.py
+
+      - name: Validate package contents and extracted build
+        run: python scripts/check_package.py
